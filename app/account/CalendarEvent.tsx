@@ -9,6 +9,12 @@ const CalendarEvent = () => {
   const [eventName, setEventName] = useState("");
   const [eventDescription, setEventDescription] = useState("");
   const supabase = createClient();
+  const clearData = () => {
+    setStart(new Date());
+    setEnd(new Date());
+    setEventName("");
+    setEventDescription("");
+  };
 
   async function createCalendarEvent() {
     console.log("Creating calendar event");
@@ -24,12 +30,6 @@ const CalendarEvent = () => {
         timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       },
     };
-    // Assuming you have a session object available
-    const session = supabase.auth.session();
-    if (!session || !session.provider_token) {
-      console.error("Provider token is not available");
-      return;
-    }
     await fetch(
       "https://www.googleapis.com/calendar/v3/calendars/primary/events",
       {
@@ -74,8 +74,8 @@ const CalendarEvent = () => {
         Create Calendar Event
       </button>
       <p></p>
-      {/* <button onClick={() => clearData()}>Refresh Calendar Event</button>{" "}
-      <p></p> */}
+      <button onClick={() => clearData()}>Refresh Calendar Event</button>{" "}
+      <p></p>
       {/* <button onClick={() => signOut()}>Sign Out</button> */}
       <br />
       <br />
