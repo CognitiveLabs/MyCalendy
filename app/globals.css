@@ -1,0 +1,329 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  color: #f8f8f8;
+  background: black;
+}
+
+body input,
+body textarea {
+  color: black;
+}
+
+a {
+  color: #2d7bd4;
+}
+
+a:hover {
+  border-bottom: 1px solid;
+}
+
+p {
+  margin: 8px 0;
+}
+
+code {
+  color: #ffa500;
+}
+
+li {
+  padding: 4px;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+/* Define a custom CSS class for the specific color */
+.ring-custom-blue {
+  --ring-color: #38b6ff;
+}
+
+/* Apply the custom class to focused elements */
+*:focus {
+  @apply ring-custom-blue outline-none ring-2 ring-opacity-50;
+}
+
+html {
+  height: 100%;
+  box-sizing: border-box;
+  touch-action: manipulation;
+  font-feature-settings:
+    "case" 1,
+    "rlig" 1,
+    "calt" 0;
+}
+
+html,
+body {
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Helvetica Neue",
+    "Helvetica", sans-serif, "Signika", sans-serif;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  @apply text-white antialiased;
+}
+
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+.height-screen-helper {
+  height: calc(100vh - 80px);
+}
+
+.fc-header-toolbar {
+  display: inline-block;
+  padding: 4px 4px;
+  .child-element {
+    margin-right: 8px; /* Apply space between child elements */
+  }
+}
+
+.fc-day {
+  margin: 8px; /* Apply margin to the element */
+}
+
+.fc-scrollgrid-sync-table {
+  width: 100%; /* Apply full width */
+}
+
+.fc-view {
+  height: 100%; /* Apply full height */
+  width: 100%; /* Apply full width */
+  height: 75%; /* Apply height for large screens */
+  height: 66.67%; /* Apply height for extra-large screens */
+}
+
+.page-width {
+  max-width: 65%;
+}
+.list-item {
+  height: 60px; /* Default height for desktop */
+}
+
+@media (max-width: 767px) {
+  /* Adjust the max-width value based on your mobile breakpoint */
+  .list-item {
+    height: 120px; /* Height for mobile */
+  }
+}
+
+@media (max-width: 767px) {
+  .mobiletext {
+    font-size: 3rem; /* Adjust this value as needed */
+  }
+
+  .mobiletext {
+    font-size: 2rem; /* Adjust this value as needed */
+  }
+}
+
+@media (max-width: 640px) {
+  .mobiletext {
+    font-size: 3rem; /* Adjust this value as needed */
+  }
+
+  .mobiletext {
+    font-size: 2rem; /* Adjust this value as needed */
+  }
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Signika:wght@400;700&display=swap");
+
+@font-face {
+  font-family: "Signika";
+  src: url("./styles/fonts/static/Signika-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Signika";
+  src: url("./styles/fonts/static/Signika-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+.signika-title {
+  font-family: "Signika", sans-serif;
+  color: #48bb78;
+}
+
+.signika-orange {
+  font-family: "Signika", sans-serif;
+}
+
+.signika {
+  font-family: "Signika", sans-serif;
+  color: #38b6ff;
+}
+
+.signikaAbout {
+  font-family: "Signika", sans-serif;
+}
+
+.list-item {
+  margin-bottom: 8px; /* Add spacing between list items */
+}
+
+.column {
+  margin: 0 10px;
+  flex: 0 0 auto; /* Ensures columns shrink-to-fit on smaller screens */
+  max-width: 320px; /* Adjust as needed */
+}
+
+.blue-column {
+  margin: 0 10px;
+  flex: 0 0 auto; /* Same as above */
+  max-width: 200px; /* Adjust as needed */
+}
+
+@media (max-width: 760px) {
+  /* Override flex properties for larger screens if needed */
+  .column {
+    max-width: 30%; /* Example: 3 equal-width columns on larger screens */
+    font-size: 0.7rem;
+  }
+
+  .blue-column {
+    max-width: 23%; /* Adjust as needed */
+    font-size: 0.7rem;
+    text-align: left;
+  }
+  ul li {
+    font-size: 0.7rem;
+    margin-right: 1rem;
+  }
+  .nudge-left {
+    margin-left: -14px; /* Adjust as needed */
+  }
+  .nudge {
+    margin-left: -7px; /* Adjust as needed */
+  }
+  .mobile-body {
+    max-width: 80%;
+  }
+}
+
+.draggable {
+  background-color: #38b6ff;
+  cursor: grab;
+}
+
+.draggabletext {
+  color: #38b6ff;
+}
+
+.event-container {
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.event-container > div {
+  flex: 1 1 0;
+  margin: 1 0px;
+}
+
+.signika-header {
+  font-family: "Signika", sans-serif;
+  color: #38b6ff;
+}
+.calendar-container {
+  justify-content: center;
+  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .calendar-container {
+    padding: 0; /* Adjust padding or margins as needed for mobile layout */
+  }
+
+  .grid-cols-10 {
+    grid-template-columns: 1fr; /* Change the number of columns for smaller screens */
+  }
+
+  .col-span-8 {
+    grid-column: span 1; /* Adjust the span for smaller screens */
+  }
+
+  .ml-8 {
+    margin-left: 0; /* Adjust left margin for smaller screens */
+  }
+}
+
+.blog-page {
+  @apply container mx-auto px-4;
+}
+
+.blog-posts {
+  @apply grid grid-cols-1 gap-4 pt-8 md:grid-cols-2;
+}
+
+.sidebar {
+  @apply col-span-1 bg-gray-100 px-4 py-8 md:col-span-1;
+}
+
+.source-card {
+  /* Pill-like shape and glow effect  */
+  background-color: #252525 !important;
+  border-radius: 50px;
+  box-shadow: 0px 0px 10px #444;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  /* Transition effect  */
+  transition: all 0.3s ease-in-out;
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+/* Source card link */
+.source-link {
+  color: rgb(52, 152, 219);
+  font-weight: bold;
+  text-decoration: none;
+}
+
+/* Overriding default list styles  */
+.list-none {
+  list-style: none;
+}
+
+/* Spacing between card elements  */
+.space-y-4 {
+  margin-top: 16px;
+}
+
+/* Footer styles  */
+.w-full {
+  width: 100%;
+}
+
+.bg-blue-400 {
+  background-color: #99c5fe !important;
+}
+
+.source-author {
+  margin-top: 0.5em; /* Adjust the margin as needed */
+  display: block; /* Ensures each author is on a new line */
+}
+
+.smalltext {
+  font-size: 1rem; /* Or your desired default size */
+}
+
+/* Styles for mobile devices (screen width less than 768px) */
+@media (max-width: 768px) {
+  .smalltext {
+    font-size: 0.8rem; /* Adjust size as needed for mobile */
+  }
+}
