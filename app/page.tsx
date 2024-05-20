@@ -71,8 +71,7 @@ export default async function Homepage() {
           <b> Creative writing</b>? It plans that for when your{" "}
           <b>imagination</b> is <b>soaring</b>. It&apos;s like having a
           <b>personal productivity coach</b> whispering in your ear, guiding you
-          towards
-          <b>peak performance</b> hour by hour.
+          towards <b>peak performance</b> hour by hour.
         </p>
       </div>
       <Columns />
