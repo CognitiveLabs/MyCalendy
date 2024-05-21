@@ -88,6 +88,9 @@ dependencies:
   postcss:
     specifier: 8.4.27
     version: 8.4.27
+  postcss-nested:
+    specifier: ^6.0.1
+    version: 6.0.1(postcss@8.4.27)
   react:
     specifier: 18.2.0
     version: 18.2.0
