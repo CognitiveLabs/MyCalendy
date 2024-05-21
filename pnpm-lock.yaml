@@ -6,7 +6,7 @@ settings:
 
 overrides:
   '@langchain/community': 0.0.27
-  '@langchain/core': 0.1.25
+  '@langchain/core': 0.1.34
   langsmith: 0.0.69-rc0.0
 
 dependencies:
@@ -80,8 +80,8 @@ dependencies:
     specifier: 13.4.12
     version: 13.4.12(eslint@8.46.0)(typescript@5.1.6)
   langchain:
-    specifier: ^0.2.0
-    version: 0.2.0(@supabase/supabase-js@2.43.2)
+    specifier: ^0.1.21
+    version: 0.1.37(@supabase/supabase-js@2.43.2)
   next:
     specifier: 14.0.1
     version: 14.0.1(react-dom@18.2.0)(react@18.2.0)
@@ -137,6 +137,22 @@ packages:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.5
       '@jridgewell/trace-mapping': 0.3.25
+    dev: false
+
+  /@anthropic-ai/sdk@0.9.1:
+    resolution: {integrity: sha512-wa1meQ2WSfoY8Uor3EdrJq0jTiZJoKoSii2ZVWRY1oN4Tlr5s59pADg9T79FTbPe1/se5c3pBeZgJL63wmuoBA==}
+    dependencies:
+      '@types/node': 18.19.33
+      '@types/node-fetch': 2.6.11
+      abort-controller: 3.0.0
+      agentkeepalive: 4.5.0
+      digest-fetch: 1.3.0
+      form-data-encoder: 1.7.2
+      formdata-node: 4.4.1
+      node-fetch: 2.7.0
+      web-streams-polyfill: 3.3.3
+    transitivePeerDependencies:
+      - encoding
     dev: false
 
   /@babel/helper-string-parser@7.24.1:
@@ -594,7 +610,7 @@ packages:
       ws:
         optional: true
     dependencies:
-      '@langchain/core': 0.1.25
+      '@langchain/core': 0.1.34
       '@langchain/openai': 0.0.14
       '@supabase/supabase-js': 2.43.2
       flat: 5.0.2
@@ -605,8 +621,8 @@ packages:
       - encoding
     dev: false
 
-  /@langchain/core@0.1.25:
-    resolution: {integrity: sha512-iFlUXKl68WZ9BQLA70gwfJOgCrLWsb9DYjUSIFRjG0WI+VFMbRpJipfCi0i40EhuLTmyDfCrg+kvpE0yqQ+D5g==}
+  /@langchain/core@0.1.34:
+    resolution: {integrity: sha512-b5tGxCwsO2Q4BNgN1Vm6v0SgxXYabR886nLMM+UNw+FBWkb6Pmz1vZFH+2fRZ7da1vPLBMEc9JtSK0Xgegk5vQ==}
     engines: {node: '>=18'}
     dependencies:
       ansi-styles: 5.2.0
@@ -626,7 +642,7 @@ packages:
     resolution: {integrity: sha512-co6nRylPrLGY/C3JYxhHt6cxLq07P086O7K3QaZH7SFFErIN9wSzJonpvhZR07DEUq6eK6wKgh2ORxA/NcjSRQ==}
     engines: {node: '>=18'}
     dependencies:
-      '@langchain/core': 0.1.25
+      '@langchain/core': 0.1.34
       js-tiktoken: 1.0.12
       openai: 4.47.1
       zod: 3.23.8
@@ -639,7 +655,7 @@ packages:
     resolution: {integrity: sha512-hTBo9y9bHtFvMT5ySBW7TrmKhLSA91iNahigeqAFBVrLmBDz+6rzzLFc1mpq6JEAR3fZKdaUXqso3nB23jIpTw==}
     engines: {node: '>=18'}
     dependencies:
-      '@langchain/core': 0.1.25
+      '@langchain/core': 0.1.34
       js-tiktoken: 1.0.12
       openai: 4.47.1
       zod: 3.23.8
@@ -652,7 +668,7 @@ packages:
     resolution: {integrity: sha512-6bQOuYHTGYlkgPY/8M5WPq4nnXZpEysGzRopQCYjg2WLcEoIPUMMrXsAaNNdvU3BOeMrhin8izvpDPD165hX6Q==}
     engines: {node: '>=18'}
     dependencies:
-      '@langchain/core': 0.1.25
+      '@langchain/core': 0.1.34
       js-tiktoken: 1.0.12
     dev: false
 
@@ -1413,6 +1429,10 @@ packages:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
     dev: false
 
+  /base-64@0.1.0:
+    resolution: {integrity: sha512-Y5gU45svrR5tI2Vt/X9GPd3L0HNIKzGu202EjxrXMpuc2V2CiKgemAbUUsqYmZJvPtCXoUKjNZwBJzsNScUbXA==}
+    dev: false
+
   /base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
     dev: false
@@ -1500,6 +1520,10 @@ packages:
     dependencies:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
+    dev: false
+
+  /charenc@0.0.2:
+    resolution: {integrity: sha512-yrLQ/yVUFXkzg7EDQsPieE/53+0RlaWTs+wBrvW36cyilJ2SaDWfl4Yj7MtLTXleV9uEKefbAGUPv2/iWSooRA==}
     dev: false
 
   /chokidar@3.6.0:
@@ -1590,6 +1614,10 @@ packages:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+    dev: false
+
+  /crypt@0.0.2:
+    resolution: {integrity: sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==}
     dev: false
 
   /css-tree@2.3.1:
@@ -1707,6 +1735,13 @@ packages:
 
   /didyoumean@1.2.2:
     resolution: {integrity: sha512-gxtyfqMg7GKyhQmb056K7M3xszy/myH8w+B4RT+QXBQsvAOdc3XymqDDPHx1BgPgsdAA5SIifona89YtRATDzw==}
+    dev: false
+
+  /digest-fetch@1.3.0:
+    resolution: {integrity: sha512-CGJuv6iKNM7QyZlM2T3sPAdZWd/p9zQiRNS9G+9COUCwzWFTs0Xp8NF5iePx7wtvhDykReiRRrSeNb4oMmB8lA==}
+    dependencies:
+      base-64: 0.1.0
+      md5: 2.3.0
     dev: false
 
   /dir-glob@3.0.1:
@@ -2585,6 +2620,10 @@ packages:
       has-tostringtag: 1.0.2
     dev: false
 
+  /is-buffer@1.1.6:
+    resolution: {integrity: sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==}
+    dev: false
+
   /is-callable@1.2.7:
     resolution: {integrity: sha512-1BC0BVFhS/p0qtw6enp8e+8OD0UrK0oFLztSjNzhcKA3WDuJxxAPXzPuPtKkjEY9UUoEWlX/8fgKeu2S8i9JTA==}
     engines: {node: '>= 0.4'}
@@ -2826,8 +2865,8 @@ packages:
       json-buffer: 3.0.1
     dev: false
 
-  /langchain@0.2.0(@supabase/supabase-js@2.43.2):
-    resolution: {integrity: sha512-8c7Dg9OIPk4lFIQGyfOytXbUGLLSsxs9MV53cLODspkOGzaUpwy5FGBie30SrOxIEFJo+FDaJgpDAFO3Xi4NMw==}
+  /langchain@0.1.37(@supabase/supabase-js@2.43.2):
+    resolution: {integrity: sha512-rpaLEJtRrLYhAViEp7/aHfSkxbgSqHJ5n10tXv3o4kHP/wOin85RpTgewwvGjEaKc3797jOg+sLSk6a7e0UlMg==}
     engines: {node: '>=18'}
     peerDependencies:
       '@aws-sdk/client-s3': ^3.310.0
@@ -2840,6 +2879,7 @@ packages:
       '@gomomento/sdk-core': ^1.51.1
       '@gomomento/sdk-web': ^1.51.1
       '@google-ai/generativelanguage': ^0.2.1
+      '@google-cloud/storage': ^6.10.1 || ^7.7.0
       '@mendable/firecrawl-js': ^0.0.13
       '@notionhq/client': ^2.2.10
       '@pinecone-database/pinecone': '*'
@@ -2857,6 +2897,7 @@ packages:
       epub2: ^3.0.1
       faiss-node: '*'
       fast-xml-parser: '*'
+      google-auth-library: ^8.9.0
       handlebars: ^4.7.8
       html-to-text: ^9.0.5
       ignore: ^5.2.0
@@ -2902,6 +2943,8 @@ packages:
         optional: true
       '@google-ai/generativelanguage':
         optional: true
+      '@google-cloud/storage':
+        optional: true
       '@mendable/firecrawl-js':
         optional: true
       '@notionhq/client':
@@ -2935,6 +2978,8 @@ packages:
       faiss-node:
         optional: true
       fast-xml-parser:
+        optional: true
+      google-auth-library:
         optional: true
       handlebars:
         optional: true
@@ -2985,7 +3030,9 @@ packages:
       youtubei.js:
         optional: true
     dependencies:
-      '@langchain/core': 0.1.25
+      '@anthropic-ai/sdk': 0.9.1
+      '@langchain/community': 0.0.27(@supabase/supabase-js@2.43.2)
+      '@langchain/core': 0.1.34
       '@langchain/openai': 0.0.33
       '@langchain/textsplitters': 0.0.2
       '@supabase/supabase-js': 2.43.2
@@ -3003,7 +3050,67 @@ packages:
       zod: 3.23.8
       zod-to-json-schema: 3.23.0(zod@3.23.8)
     transitivePeerDependencies:
+      - '@aws-crypto/sha256-js'
+      - '@aws-sdk/client-bedrock-agent-runtime'
+      - '@aws-sdk/client-bedrock-runtime'
+      - '@aws-sdk/client-dynamodb'
+      - '@aws-sdk/client-kendra'
+      - '@aws-sdk/client-lambda'
+      - '@azure/search-documents'
+      - '@clickhouse/client'
+      - '@cloudflare/ai'
+      - '@datastax/astra-db-ts'
+      - '@elastic/elasticsearch'
+      - '@getmetal/metal-sdk'
+      - '@getzep/zep-js'
+      - '@gradientai/nodejs-sdk'
+      - '@huggingface/inference'
+      - '@mozilla/readability'
+      - '@opensearch-project/opensearch'
+      - '@planetscale/database'
+      - '@qdrant/js-client-rest'
+      - '@raycast/api'
+      - '@rockset/client'
+      - '@smithy/eventstream-codec'
+      - '@smithy/protocol-http'
+      - '@smithy/signature-v4'
+      - '@smithy/util-utf8'
+      - '@supabase/postgrest-js'
+      - '@tensorflow-models/universal-sentence-encoder'
+      - '@tensorflow/tfjs-converter'
+      - '@tensorflow/tfjs-core'
+      - '@upstash/redis'
+      - '@upstash/vector'
+      - '@vercel/postgres'
+      - '@writerai/writer-sdk'
+      - '@xenova/transformers'
+      - '@zilliz/milvus2-sdk-node'
+      - better-sqlite3
+      - cassandra-driver
+      - closevector-common
+      - closevector-node
+      - closevector-web
+      - cohere-ai
+      - discord.js
+      - dria
       - encoding
+      - firebase-admin
+      - googleapis
+      - hnswlib-node
+      - llmonitor
+      - lodash
+      - lunary
+      - mysql2
+      - neo4j-driver
+      - pg
+      - pg-copy-streams
+      - pickleparser
+      - portkey-ai
+      - replicate
+      - typesense
+      - usearch
+      - vectordb
+      - voy-search
     dev: false
 
   /langchainhub@0.0.10:
@@ -3100,6 +3207,14 @@ packages:
     engines: {node: '>=6'}
     dependencies:
       p-defer: 1.0.0
+    dev: false
+
+  /md5@2.3.0:
+    resolution: {integrity: sha512-T1GITYmFaKuO91vxyoQMFETst+O71VUPEU3ze5GNzDm0OWdP8v1ziTaAEPUr/3kLsY3Sftgz242A1SetQiDL7g==}
+    dependencies:
+      charenc: 0.0.2
+      crypt: 0.0.2
+      is-buffer: 1.1.6
     dev: false
 
   /mdn-data@2.0.30:
