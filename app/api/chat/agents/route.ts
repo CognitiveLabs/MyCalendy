@@ -4,7 +4,6 @@ import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
 import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
 import { ChatOpenAI } from "@langchain/openai";
 import { SerpAPI } from "@langchain/community/tools/serpapi";
-import { Calculator } from "langchain/tools/calculator";
 import { AIMessage, ChatMessage, HumanMessage } from "@langchain/core/messages";
 
 import {
@@ -51,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     // Requires process.env.SERPAPI_API_KEY to be set: https://serpapi.com/
     // You can remove this or use a different tool instead.
-    const tools = [new Calculator(), new SerpAPI()];
+    const tools = [ new SerpAPI()];
     const chat = new ChatOpenAI({
       modelName: "gpt-3.5-turbo-1106",
       temperature: 0,
