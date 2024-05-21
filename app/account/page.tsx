@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import CalendarEvent from "./CalendarEvent";
+import AddEvent from "./AddEvent";
+import Events from "./Events";
 import { createClient } from "@/utils/supabase/server";
 
 export default async function PrivatePage() {
@@ -15,7 +16,9 @@ export default async function PrivatePage() {
   return (
     <>
       <p>Hello {data.user.email}</p>
-      <CalendarEvent session={session} />
+      <Events  />
+      <br></br>
+      <AddEvent session={session} />
     </>
   );
 }
