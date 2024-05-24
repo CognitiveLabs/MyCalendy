@@ -17,6 +17,7 @@ import {
   TrashIcon,
 } from "@heroicons/react/20/solid";
 import { Fragment, useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
 
 interface Event {
   title: string;
@@ -26,7 +27,107 @@ interface Event {
   id: number;
 }
 
-export default function Home() {
+interface Session {
+  provider_token: string;
+  provider_refresh_token: string;
+}
+
+async function refreshAccessToken() {
+  try {
+    console.log(
+      "Refreshing access token using refresh token:",
+      session.provider_refresh_token,
+    );
+
+    const response = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+        client_secret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET!,
+        refresh_token: session.provider_refresh_token,
+        grant_type: "refresh_token",
+      }),
+    });
+
+    const responseData = await response.json();
+    if (response.ok) {
+      console.log("New access token:", responseData.access_token);
+      return responseData.access_token;
+    } else {
+      console.error("Error refreshing token:", responseData);
+      throw new Error("Failed to refresh access token");
+    }
+  } catch (error) {
+    console.error("Exception during token refresh:", error);
+    throw error;
+  }
+}
+
+async function createAddEvent() {
+  try {
+    console.log("Creating calendar event");
+    console.log("Session data:", session); // Log session data for debugging
+
+    let accessToken = session.provider_token;
+    console.log("Session provider token:", accessToken); // Log token for debugging
+
+    const event = {
+      summary: eventName,
+      description: eventDescription,
+      start: {
+        dateTime: start!.toISOString(), // Non-null assertion
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      },
+      end: {
+        dateTime: end!.toISOString(), // Non-null assertion
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      },
+    };
+
+    let response = await fetch(
+      "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + accessToken,
+        },
+        body: JSON.stringify(event),
+      },
+    );
+
+    if (response.status === 401) {
+      console.log("Access token expired, refreshing token...");
+      accessToken = await refreshAccessToken();
+      response = await fetch(
+        "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+        {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + accessToken,
+          },
+          body: JSON.stringify(event),
+        },
+      );
+    }
+
+    const responseData = await response.json();
+    if (response.ok) {
+      console.log(responseData);
+      alert("Event created, check your Google Calendar!");
+    } else {
+      console.error("Error creating event:", responseData);
+      alert("Error creating event. Check console for details.");
+    }
+  } catch (error) {
+    console.error("Error creating event:", error);
+    alert("Error creating event. Check console for details.");
+  }
+}
+
+export default function Home({ session }: { session: Session }) {
   const [events, setEvents] = useState([
     { title: "to start", description: "Description for event 1", id: "1" },
   ]);
@@ -43,6 +144,7 @@ export default function Home() {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
+  const supabase = createClient();
 
   useEffect(() => {
     let draggableEl = document.getElementById("draggable-el");
@@ -142,6 +244,79 @@ export default function Home() {
     });
     setIsEditing(false);
     setEventToEdit(null);
+  }
+
+  async function handleAddToGoogleCalendar(event: Event, session: Session) {
+    try {
+      console.log("Creating calendar event");
+      console.log("Session data:", session); // Log session data for debugging
+
+      let accessToken = session.provider_token;
+      console.log("Session provider token:", accessToken); // Log token for debugging
+
+      const googleEvent = {
+        summary: event.title,
+        description: event.description,
+        start: {
+          dateTime: new Date(event.start).toISOString(), // Ensure correct date format
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
+        end: {
+          dateTime: new Date(event.start).toISOString(), // Ensure correct date format
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
+      };
+
+      let response = await fetch(
+        "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+        {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + accessToken,
+          },
+          body: JSON.stringify(googleEvent),
+        },
+      );
+
+      if (response.status === 401) {
+        console.log("Access token expired, refreshing token...");
+        accessToken = await refreshAccessToken(session);
+        response = await fetch(
+          "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+          {
+            method: "POST",
+            headers: {
+              Authorization: "Bearer " + accessToken,
+            },
+            body: JSON.stringify(googleEvent),
+          },
+        );
+      }
+
+      const responseData = await response.json();
+      if (response.ok) {
+        console.log(responseData);
+        alert("Event created, check your Google Calendar!");
+      } else {
+        console.error("Error creating event:", responseData);
+        alert("Error creating event. Check console for details.");
+      }
+    } catch (error) {
+      console.error("Error creating event:", error);
+      alert("Error creating event. Check console for details.");
+    }
+  }
+
+  async function getSessionTokens(supabase: any, session: any) {
+    const { data: authSession } = await supabase.auth.getSession();
+    if (!authSession) {
+      throw new Error("No session found");
+    }
+
+    const provider_token = session?.provider_token;
+    const provider_refresh_token = session?.provider_refresh_token;
+
+    return { provider_token, provider_refresh_token };
   }
 
   function handleEventClick(data: { event: { id: string } }) {
@@ -477,6 +652,19 @@ export default function Home() {
                                   focus:ring-offset-2"
                                 >
                                   {isEditing ? "Save Changes" : "Add Event"}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="ml-2 inline-flex justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                                  onClick={() =>
+                                    handleAddToGoogleCalendar(newEvent, {
+                                      provider_token: session.provider_token,
+                                      provider_refresh_token:
+                                        session.provider_refresh_token,
+                                    })
+                                  } // Pass session tokens
+                                >
+                                  Add to Google Calendar
                                 </button>
                               </div>
                             </form>
