@@ -9,8 +9,8 @@ interface Session {
 }
 
 const AddEvent = ({ session }: { session: Session }) => {
-  const [start, setStart] = useState(new Date());
-  const [end, setEnd] = useState(new Date());
+  const [start, setStart] = useState<Date | null>(new Date());
+  const [end, setEnd] = useState<Date | null>(new Date());
   const [eventName, setEventName] = useState("");
   const [eventDescription, setEventDescription] = useState("");
   const supabase = createClient();
@@ -68,11 +68,11 @@ const AddEvent = ({ session }: { session: Session }) => {
         summary: eventName,
         description: eventDescription,
         start: {
-          dateTime: start.toISOString(),
+          dateTime: start!.toISOString(), // Non-null assertion
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         },
         end: {
-          dateTime: end.toISOString(),
+          dateTime: end!.toISOString(), // Non-null assertion
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         },
       };
