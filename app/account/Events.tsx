@@ -18,6 +18,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { Fragment, useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+import EventList from "./EventList";
 
 interface Event {
   title: string;
@@ -625,6 +626,7 @@ export default function Home({ session }: { session: Session }) {
           </Dialog>
         </Transition.Root>
       </main>
+      <EventList />
     </>
   );
 }

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState, ChangeEvent, useEffect } from 'react';
+import React, { useState, ChangeEvent, useEffect } from "react";
 
 interface MorningSliderProps {
   morningvalue: number;
@@ -9,14 +9,14 @@ interface MorningSliderProps {
 
 const MorningSlider: React.FC<MorningSliderProps> = ({
   morningvalue,
-  onChange
+  onChange,
 }) => {
   const shouldShift = morningvalue > -1 && morningvalue < 101;
 
   useEffect(() => {
     document.documentElement.style.setProperty(
-      '--morning-value',
-      morningvalue.toString()
+      "--morning-value",
+      morningvalue.toString(),
     );
   }, [morningvalue]);
 
@@ -34,11 +34,11 @@ const MorningSlider: React.FC<MorningSliderProps> = ({
         />
         <div
           className="morningtooltip"
-          style={{ '--shift': shouldShift ? 1 : 0 } as React.CSSProperties}
+          style={{ "--shift": shouldShift ? 1 : 0 } as React.CSSProperties}
         ></div>
         <div
           className="morningcontrol__track"
-          style={{ '--shift': shouldShift ? 1 : 0 } as React.CSSProperties}
+          style={{ "--shift": shouldShift ? 1 : 0 } as React.CSSProperties}
         ></div>
       </div>
       <style>{MorningSliderStyle}</style>
@@ -53,17 +53,14 @@ const MorningForm: React.FC = () => {
     const morningvalue = parseInt(event.target.value, 10);
     setMorningslidervalue(morningvalue);
     document.documentElement.style.setProperty(
-      '--morning-value',
-      morningvalue.toString()
+      "--morning-value",
+      morningvalue.toString(),
     );
   };
 
   return (
     <div>
-      <h2 className="text-center">
-        Over the last few weeks, have you been more of a morning or evening
-        person?
-      </h2>
+      <h2 className="text-center">morning or evening person?</h2>
       <br />
       <form>
         <MorningSlider
