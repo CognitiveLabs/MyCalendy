@@ -161,7 +161,10 @@ export default function Home() {
         {eventInfo.view.type !== "list" && (
           <TrashIcon
             className="h-5 w-5 text-red-600 cursor-pointer"
-            onClick={() => handleDeleteEvent(Number(eventInfo.event.id))}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent triggering the edit modal
+              handleDeleteModal({ event: { id: eventInfo.event.id } });
+            }}
           />
         )}
       </div>
