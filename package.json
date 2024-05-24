@@ -54,20 +54,20 @@
     "prettier": "3.0.0"
   },
   "resolutions": {
-    "@langchain/community": "0.0.27",
+    "@langchain/community": "0.0.32",
     "@langchain/core": "0.1.34",
-    "langsmith": "0.0.69-rc0.0"
+    "@langchain/openai": "0.0.14"
   },
   "overrides": {
-    "@langchain/community": "0.0.27",
+    "@langchain/community": "0.0.32",
     "@langchain/core": "0.1.34",
-    "langsmith": "0.0.69-rc0.0"
+    "@langchain/openai": "0.0.14"
   },
   "pnpm": {
     "overrides": {
-      "@langchain/community": "0.0.27",
+      "@langchain/community": "0.0.32",
       "@langchain/core": "0.1.34",
-      "langsmith": "0.0.69-rc0.0"
+      "@langchain/openai": "0.0.14"
     }
   }
 }
