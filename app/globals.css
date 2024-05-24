@@ -216,7 +216,6 @@ body {
 
 .draggable {
   background-color: #38b6ff;
-  cursor: grab;
 }
 
 .draggabletext {
@@ -224,13 +223,27 @@ body {
 }
 
 .event-container {
+  display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
+  align-items: center; /* Center align the events */
 }
 
-.event-container > div {
-  flex: 1 1 0;
-  margin: 1 0px;
+.fc-event {
+  width: auto; /* Let the event elements size automatically */
+  max-width: 100%;
+  cursor: grab; /* Ensure they don't exceed the container */
+}
+
+.max-h-64 {
+  max-height: 7rem; /* Set a maximum height for the draggable container */
+}
+
+.w-96 {
+  width: 8rem; /* Set the width to 24rem (adjust as needed) */
+}
+
+.overflow-y-auto {
+  overflow-y: auto; /* Enable vertical scrolling if content exceeds max-height */
 }
 
 .signika-header {
