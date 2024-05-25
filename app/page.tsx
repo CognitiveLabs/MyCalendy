@@ -69,7 +69,7 @@ export default async function Homepage() {
           <b>accordingly</b>. Need <b>analytical thinking</b>? My Calendy
           schedules that for when your brain is <b>sharpest</b>.
           <b> Creative writing</b>? It plans that for when your{" "}
-          <b>imagination</b> is <b>soaring</b>. It&apos;s like having a
+          <b>imagination</b> is <b>soaring</b>. It&apos;s like having a{" "}
           <b>personal productivity coach</b> whispering in your ear, guiding you
           towards <b>peak performance</b> hour by hour.
         </p>
