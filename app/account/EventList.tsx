@@ -11,7 +11,11 @@ interface EventRow {
   bestTime?: string; // Added bestTime property to store Cally's suggestion
 }
 
-const EventList = () => {
+interface EventListProps {
+  onAddToCalendar: (event: EventRow, times: string[]) => void;
+}
+
+const EventList: React.FC<EventListProps> = ({ onAddToCalendar }) => {
   const [events, setEvents] = useState<EventRow[]>([
     { id: 1, description: "" },
     { id: 2, description: "" },
@@ -37,9 +41,6 @@ const EventList = () => {
   const handleCallyAssist = async () => {
     setLoading(true);
     try {
-      const nonEmptyEvents = events.filter(
-        (event) => event.description.trim() !== "",
-      );
       const response = await fetch("/api/analyze", {
         method: "POST",
         headers: {
@@ -48,11 +49,13 @@ const EventList = () => {
         body: JSON.stringify({
           messages: [
             { role: "system", content: "User events for scheduling" },
-            ...nonEmptyEvents.map((event) => ({
-              role: "user",
-              id: event.id, // Include the ID in the message
-              content: `Find the best time to schedule the event with description "${event.description}".`,
-            })),
+            ...events
+              .filter((event) => event.description.trim() !== "")
+              .map((event) => ({
+                role: "user",
+                id: event.id, // Include the ID in the message
+                content: `Find the best time to schedule an event with description "${event.description}".`,
+              })),
           ],
         }),
       });
@@ -60,9 +63,6 @@ const EventList = () => {
       const data = await response.json();
       if (response.ok) {
         const updatedEvents = events.map((event) => {
-          if (event.description.trim() === "") {
-            return event; // Skip empty events
-          }
           const result = data.find((item: any) => item.id === event.id);
           return {
             ...event,
@@ -81,6 +81,11 @@ const EventList = () => {
     setLoading(false);
   };
 
+  const handleAddToCalendar = (event: EventRow) => {
+    const times = event.bestTime?.split(".").map((time) => time.trim());
+    onAddToCalendar(event, times || []);
+  };
+
   return (
     <div className={styles["event-list"]}>
       {events.map((event, index) => (
@@ -97,6 +102,12 @@ const EventList = () => {
           {event.bestTime && (
             <div className={styles["best-time"]}>
               Best Time: {event.bestTime}
+              <button
+                className={styles["calendar-button"]}
+                onClick={() => handleAddToCalendar(event)}
+              >
+                View on Calendar
+              </button>
             </div>
           )}
         </div>

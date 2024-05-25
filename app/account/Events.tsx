@@ -19,6 +19,7 @@ import {
 import { Fragment, useEffect, useState, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
 import EventList from "./EventList";
+import EventRow from "./EventList";
 
 interface Event {
   title: string;
@@ -302,6 +303,36 @@ export default function Home({ session }: { session: Session }) {
     );
   }
 
+  function handleAddEventToCalendar(event: EventRow, times: string[]) {
+    const newEvents = times.map((time, index) => {
+      const eventDate = new Date();
+      let hour = 0;
+      let minute = 0;
+
+      if (time.includes("morning")) {
+        hour = 8; // Set to 8:00 AM
+      } else if (time.includes("afternoon")) {
+        hour = 13; // Set to 1:00 PM
+      } else if (time.includes("evening")) {
+        hour = 18; // Set to 6:00 PM
+      } else if (time.includes(":")) {
+        [hour, minute] = time.split(":").map(Number);
+      }
+
+      eventDate.setHours(hour, minute, 0, 0);
+
+      return {
+        title: event.description,
+        description: event.description,
+        start: eventDate.toISOString(),
+        allDay: false,
+        id: new Date().getTime() + index,
+      };
+    });
+
+    setAllEvents((prevEvents) => [...prevEvents, ...newEvents]);
+  }
+
   return (
     <>
       <nav className="flex justify-between mb-12 border-b border-violet-100 p-4">
@@ -371,7 +402,7 @@ export default function Home({ session }: { session: Session }) {
               </div>
             </div>
           </div>
-          <EventList />
+          <EventList onAddToCalendar={handleAddEventToCalendar} />
         </div>
 
         <Transition.Root show={showDeleteModal} as={Fragment}>
