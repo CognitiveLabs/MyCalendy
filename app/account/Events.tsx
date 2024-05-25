@@ -291,7 +291,7 @@ export default function Home({ session }: { session: Session }) {
         <span>{eventInfo.event.title}</span>
         {eventInfo.view.type !== "list" && (
           <TrashIcon
-            className="h-5 w-5 text-red-600 cursor-pointer"
+            className="h-5 w-5 text-red-600 cursor-pointer trash-icon"
             onClick={(e) => {
               e.stopPropagation(); // Prevent triggering the edit modal
               handleDeleteModal({ event: { id: eventInfo.event.id } });
