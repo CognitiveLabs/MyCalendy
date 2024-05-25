@@ -7,11 +7,19 @@
   margin: 0 auto; /* Center the container */
 }
 
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%; /* Make sure it uses the full available width */
+  max-width: 800px; /* Set the desired maximum width */
+  margin: 0 auto; /* Center the container */
+}
+
 .event-row {
   display: flex;
   gap: 1rem;
   align-items: center;
-  flex-wrap: wrap; /* Ensure wrapping on smaller screens */
 }
 
 .event-number {
@@ -26,18 +34,24 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
-  min-width: 150px; /* Ensure inputs don't get too small */
 }
 
 .button-container {
   display: flex;
-  justify-content: center; /* Center the buttons */
-  gap: 3rem; /* Reduce the gap between buttons */
-  margin-top: 1rem; /* Add some margin-top for spacing */
-  margin-bottom: 4rem;
+  gap: 1rem;
+  justify-content: center;
 }
 
-.add-row-button,
+.add-row-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 .assist-button {
   color: white;
   border: none;
@@ -62,6 +76,20 @@
 
 .add-row-button:hover {
   background-color: #38b6ff;
+}
+
+.analyze-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.analyze-button:hover {
+  background-color: #0056b3;
 }
 
 /* Responsive styles for mobile devices */

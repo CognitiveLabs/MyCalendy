@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 // import AddEvent from "./AddEvent";
 import Events from "./Events";
 import { createClient } from "@/utils/supabase/server";
+import Header from "../header/page";
 
 export default async function AccountPage() {
   const supabase = createClient();
@@ -30,6 +31,7 @@ export default async function AccountPage() {
 
   return (
     <>
+      <Header />
       <p>Hello {data.user.email}</p>
       <Events session={{ provider_token, provider_refresh_token }} />
       <br />
