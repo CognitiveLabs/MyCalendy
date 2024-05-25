@@ -61,10 +61,21 @@ Question: {question}
 `;
 const answerPrompt = PromptTemplate.fromTemplate(ANSWER_TEMPLATE);
 
+interface Message {
+  role: string;
+  id: number;
+  content: string;
+}
+
+interface Input {
+  question: string;
+  chat_history: string;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const messages = body.messages ?? [];
+    const messages: Message[] = body.messages ?? [];
 
     const model = new ChatOpenAI({
       modelName: "gpt-3.5-turbo-1106",
@@ -107,11 +118,11 @@ export async function POST(req: NextRequest) {
     const answerChain = RunnableSequence.from([
       {
         context: RunnableSequence.from([
-          (input) => input.question,
+          (input: Input) => input.question,
           retrievalChain,
         ]),
-        chat_history: (input) => input.chat_history,
-        question: (input) => input.question,
+        chat_history: (input: Input) => input.chat_history,
+        question: (input: Input) => input.question,
       },
       answerPrompt,
       model,
@@ -120,7 +131,7 @@ export async function POST(req: NextRequest) {
     const conversationalRetrievalQAChain = RunnableSequence.from([
       {
         question: standaloneQuestionChain,
-        chat_history: (input) => input.chat_history,
+        chat_history: (input: Input) => input.chat_history,
       },
       answerChain,
       new BytesOutputParser(),
@@ -128,7 +139,7 @@ export async function POST(req: NextRequest) {
 
     // Process each message (event) individually and collect results
     const results = await Promise.all(
-      messages.map(async (message) => {
+      messages.map(async (message: Message) => {
         const question = message.content;
 
         const stream = await conversationalRetrievalQAChain.stream({
