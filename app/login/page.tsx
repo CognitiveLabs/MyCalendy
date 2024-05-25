@@ -7,8 +7,8 @@ export default function LoginPage() {
     <div>
       <Header />
       <div className={styles.container}>
-        <h1 className={styles.title}>Log in Page</h1>
-        <p className={styles.paragraph}>
+        <h1 className={`${styles.title} ${styles.signika}`}>Log in Page</h1>
+        <p className={`${styles.paragraph} ${styles.signika}`}>
           Currently we are in test phase, so signups are limited to a select
           few. If you&apos;d like to test this app out early, please reach out
           to us on Twitter at{" "}

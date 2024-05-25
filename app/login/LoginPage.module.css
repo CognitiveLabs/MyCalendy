@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Signika:wght@400;600&display=swap");
+
 .container {
   display: flex;
   flex-direction: column;
@@ -38,21 +40,25 @@
 }
 
 .button:hover {
-  background-color: #0070f3;
+  background-color: #38b6ff;
   color: white;
 }
 
 .title {
   font-size: 2em;
   margin-top: 20px;
-  color: #333;
+  color: #38b6ff;
   text-align: center;
 }
 
 .paragraph {
   font-size: 1em;
   margin: 10px 0 20px 0;
-  color: #666;
+  color: #a89d9d;
   text-align: center;
   max-width: 600px;
+}
+
+.signika {
+  font-family: "Signika", sans-serif;
 }
