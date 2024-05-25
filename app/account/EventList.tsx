@@ -61,7 +61,7 @@ const EventList = () => {
           Add a Row
         </button>
         <button onClick={handleCallyAssist} className={styles["assist-button"]}>
-          Let Cally assist you
+          Let Cally analyze and suggest calendar times
         </button>
       </div>
     </div>
