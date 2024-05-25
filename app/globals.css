@@ -103,9 +103,57 @@ body {
   height: 66.67%; /* Apply height for extra-large screens */
 }
 
+.fc-event {
+  width: auto; /* Let the event elements size automatically */
+  max-width: 100%;
+  cursor: grab; /* Ensure they don't exceed the container */
+}
+
+.fc-view-harness {
+  margin-bottom: 0 !important; /* Remove any bottom margin */
+  height: 520px !important; /* Set a specific height */
+}
+
+.fc-view {
+  height: auto !important; /* Adjust height to fit content */
+  margin-bottom: 0 !important; /* Remove bottom margin */
+}
+
+.fc-scroller-harness {
+  margin-bottom: 0 !important; /* Remove any bottom margin */
+  padding-bottom: 0 !important; /* Remove bottom padding */
+}
+
+.fc-daygrid-day-bottom {
+  margin-top: 0 !important; /* Remove top margin */
+  padding-top: 0 !important; /* Remove top padding */
+}
+
+.draggable {
+  margin-top: 2rem !important;
+  margin-bottom: 2rem;
+  width: 1/6 !important; /* Adjust width to 1/6 of the original */
+}
+
+.descriptive-paragraph {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  width: 60%;
+  text-align: right;
+  padding-right: 1rem; /* Add padding to separate from draggable */
+}
+
+.calendar-container {
+  height: 520px; /* Set a specific height */
+  overflow: hidden; /* Hide overflow to ensure the calendar fits within the height */
+  justify-content: center;
+  margin: 0 auto;
+}
+
 .page-width {
   max-width: 65%;
 }
+
 .list-item {
   height: 60px; /* Default height for desktop */
 }
@@ -199,16 +247,20 @@ body {
     font-size: 0.7rem;
     text-align: left;
   }
+
   ul li {
     font-size: 0.7rem;
     margin-right: 1rem;
   }
+
   .nudge-left {
     margin-left: -14px; /* Adjust as needed */
   }
+
   .nudge {
     margin-left: -7px; /* Adjust as needed */
   }
+
   .mobile-body {
     max-width: 80%;
   }
@@ -228,12 +280,6 @@ body {
   align-items: center; /* Center align the events */
 }
 
-.fc-event {
-  width: auto; /* Let the event elements size automatically */
-  max-width: 100%;
-  cursor: grab; /* Ensure they don't exceed the container */
-}
-
 .max-h-64 {
   max-height: 7rem; /* Set a maximum height for the draggable container */
 }
@@ -249,10 +295,6 @@ body {
 .signika-header {
   font-family: "Signika", sans-serif;
   color: #38b6ff;
-}
-.calendar-container {
-  justify-content: center;
-  margin: 0 auto;
 }
 
 @media (max-width: 640px) {

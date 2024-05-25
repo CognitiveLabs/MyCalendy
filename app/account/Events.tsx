@@ -311,45 +311,59 @@ export default function Home({ session }: { session: Session }) {
         </div>
       </div>
 
-      <main className="flex min-h-screen flex-col items-center justify-between pl-24">
-        <div className="grid grid-cols-10">
-          <div className="col-span-8">
-            <FullCalendar
-              plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
-              headerToolbar={{
-                left: "prev,next today",
-                center: "title",
-                right: "dayGridMonth,timeGridWeek",
-              }}
-              events={allEvents as EventSourceInput}
-              nowIndicator={true}
-              editable={true}
-              droppable={true}
-              selectable={true}
-              selectMirror={true}
-              dateClick={handleDateClick}
-              drop={(data) => addEvent(data)}
-              eventClick={handleEventClick}
-              eventContent={eventContent}
-            />
-          </div>
-          <div
-            id="draggable-el"
-            className="ml-8 border-2 p-2 rounded-md mt-16 draggable max-h-64 overflow-y-auto w-96"
-          >
-            <h1 className="font-bold text-lg text-center">Drag Event</h1>
-            <div className="event-container">
-              {events.map((event) => (
-                <div
-                  className="fc-event border-2 p-1 m-2 w-auto rounded-md text-center bg-white draggabletext"
-                  title={event.title}
-                  key={event.id}
-                >
-                  {event.title}
-                </div>
-              ))}
+      <main className="flex min-h-screen flex-col items-center justify-between">
+        <div className="w-full">
+          <div className="grid grid-cols-10">
+            <div className="col-span-10">
+              <FullCalendar
+                plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
+                headerToolbar={{
+                  left: "prev,next today",
+                  center: "title",
+                  right: "dayGridMonth,timeGridWeek",
+                }}
+                events={allEvents as EventSourceInput}
+                nowIndicator={true}
+                editable={true}
+                droppable={true}
+                selectable={true}
+                selectMirror={true}
+                dateClick={handleDateClick}
+                drop={(data) => addEvent(data)}
+                eventClick={handleEventClick}
+                eventContent={eventContent}
+              />
             </div>
           </div>
+          <div className="flex justify-center items-center">
+            <div className="descriptive-paragraph">
+              <p>
+                You can drag an event to where you&apos;d like to schedule it,
+                or you can enter the details of the event in the form below and
+                let Cally (your personal assistant) handle the rest. Cally will
+                add the event to your calendar based on your inputs above where
+                you can finalize the schedule and add it to your Google
+                Calendar.
+              </p>
+            </div>
+            <div className="border-2 p-2 rounded-md draggable overflow-y-auto flex justify-center">
+              <div className="w-96">
+                <h1 className="font-bold text-lg text-center">Drag Event</h1>
+                <div className="event-container">
+                  {events.map((event) => (
+                    <div
+                      className="fc-event border-2 p-1 m-2 w-auto rounded-md text-center bg-white draggabletext"
+                      title={event.title}
+                      key={event.id}
+                    >
+                      {event.title}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          <EventList />
         </div>
 
         <Transition.Root show={showDeleteModal} as={Fragment}>
@@ -381,16 +395,10 @@ export default function Home({ session }: { session: Session }) {
                   leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                   leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
-                  <Dialog.Panel
-                    className="relative transform overflow-hidden rounded-lg 
-                   bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
-                  >
+                  <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                     <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                       <div className="sm:flex sm:items-start">
-                        <div
-                          className="mx-auto flex h-12 w-12 flex-shrink-0 items-center 
-                      justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
-                        >
+                        <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                           <ExclamationTriangleIcon
                             className="h-6 w-6 text-red-600"
                             aria-hidden="true"
@@ -416,21 +424,14 @@ export default function Home({ session }: { session: Session }) {
                     <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                       <button
                         type="button"
-                        className="inline-flex w-full justify-center rounded-md border
-                    border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white 
-                    shadow-sm hover:bg-red-500 focus:outline-none focus:ring-2 
-                    focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
+                        className="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
                         onClick={handleDelete}
                       >
                         Delete
                       </button>
                       <button
                         type="button"
-                        className="mt-3 inline-flex w-full justify-center 
-                    rounded-md border border-gray-300 bg-white px-4 py-2 text-base 
-                    font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none 
-                    focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 
-                    sm:w-auto sm:text-sm"
+                        className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                         onClick={handleCloseModal}
                       >
                         Cancel
@@ -468,16 +469,10 @@ export default function Home({ session }: { session: Session }) {
                   leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                   leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
-                  <Dialog.Panel
-                    className="relative transform overflow-hidden rounded-lg
-                   bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
-                  >
+                  <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                     <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                       <div className="sm:flex sm:items-start">
-                        <div
-                          className="mx-auto flex h-12 w-12 flex-shrink-0 items-center 
-                      justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
-                        >
+                        <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                           <ExclamationTriangleIcon
                             className="h-6 w-6 text-red-600"
                             aria-hidden="true"
@@ -511,8 +506,7 @@ export default function Home({ session }: { session: Session }) {
                                     required
                                     value={newEvent.title}
                                     onChange={handleChange}
-                                    className="block w-full rounded-md border-gray-300 shadow-sm 
-                                  focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                   />
                                 </div>
                               </div>
@@ -532,8 +526,7 @@ export default function Home({ session }: { session: Session }) {
                                     required
                                     value={newEvent.description}
                                     onChange={handleChange}
-                                    className="block w-full rounded-md border-gray-300 shadow-sm 
-                                  focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                   />
                                 </div>
                               </div>
@@ -554,8 +547,7 @@ export default function Home({ session }: { session: Session }) {
                                     required
                                     value={newEvent.start as string}
                                     onChange={handleChange}
-                                    className="block w-full rounded-md border-gray-300 shadow-sm 
-                                  focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                   />
                                 </div>
                               </div>
@@ -572,8 +564,7 @@ export default function Home({ session }: { session: Session }) {
                                       allDay: e.target.checked,
                                     })
                                   }
-                                  className="h-4 w-4 text-indigo-600 border-gray-300 
-                                rounded focus:ring-indigo-500"
+                                  className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                                 />
                                 <label
                                   htmlFor="allDay"
@@ -586,21 +577,14 @@ export default function Home({ session }: { session: Session }) {
                               <div className="mt-4 flex justify-end">
                                 <button
                                   type="button"
-                                  className="mr-2 inline-flex justify-center rounded-md 
-                                  border border-gray-300 bg-white py-2 px-4 text-sm font-medium 
-                                  text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none 
-                                  focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                  className="mr-2 inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                   onClick={handleCloseModal}
                                 >
                                   Cancel
                                 </button>
                                 <button
                                   type="submit"
-                                  className="inline-flex justify-center rounded-md 
-                                  border border-transparent bg-indigo-600 py-2 px-4 text-sm 
-                                  font-medium text-white shadow-sm hover:bg-indigo-700 
-                                  focus:outline-none focus:ring-2 focus:ring-indigo-500 
-                                  focus:ring-offset-2"
+                                  className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                 >
                                   {isEditing ? "Save Changes" : "Add Event"}
                                 </button>
@@ -626,7 +610,6 @@ export default function Home({ session }: { session: Session }) {
           </Dialog>
         </Transition.Root>
       </main>
-      <EventList />
     </>
   );
 }
