@@ -303,11 +303,11 @@ export default function Home({ session }: { session: Session }) {
       <nav className="flex justify-between mb-12 border-b border-violet-100 p-4">
         <h1 className="font-bold text-2xl text-gray-700">Calendar</h1>
       </nav>
-      <div className="flex">
-        <div style={{ flex: 1, textAlign: "right" }}>
+      <div className="sliders-container flex">
+        <div className="slider-item" style={{ flex: 1, textAlign: "right" }}>
           <MorningForm />
         </div>
-        <div style={{ flex: 1, textAlign: "left" }}>
+        <div className="slider-item" style={{ flex: 1, textAlign: "left" }}>
           <EnergyForm />
         </div>
       </div>
