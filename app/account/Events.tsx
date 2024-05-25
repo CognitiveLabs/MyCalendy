@@ -16,7 +16,7 @@ import {
   ExclamationTriangleIcon,
   TrashIcon,
 } from "@heroicons/react/20/solid";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
 import EventList from "./EventList";
 
@@ -146,6 +146,7 @@ export default function Home({ session }: { session: Session }) {
   const [isEditing, setIsEditing] = useState(false);
   const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
   const supabase = createClient();
+  const draggableEl = useRef(null);
 
   useEffect(() => {
     let draggableEl = document.getElementById("draggable-el");
@@ -340,13 +341,16 @@ export default function Home({ session }: { session: Session }) {
               <p>
                 You can drag an event to where you&apos;d like to schedule it,
                 or you can enter the details of the event in the form below and
-                let Cally (your personal assistant) handle the rest. Cally will
-                add the event to your calendar based on your inputs above where
-                you can finalize the schedule and add it to your Google
-                Calendar.
+                let Cally (your personal assistant) add the event to your
+                calendar based on your inputs where you can finalize it and add
+                it to your Google Calendar.
               </p>
             </div>
-            <div className="border-2 p-2 rounded-md draggable overflow-y-auto flex justify-center">
+            <div
+              id="draggable-el"
+              ref={draggableEl}
+              className="border-2 p-2 rounded-md draggable overflow-y-auto flex justify-center"
+            >
               <div className="w-96">
                 <h1 className="font-bold text-lg text-center">Drag Event</h1>
                 <div className="event-container">
