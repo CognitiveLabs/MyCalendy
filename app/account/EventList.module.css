@@ -29,8 +29,16 @@
   min-width: 150px; /* Ensure inputs don't get too small */
 }
 
-.add-row-button {
-  background-color: #4caf50;
+.button-container {
+  display: flex;
+  justify-content: center; /* Center the buttons */
+  gap: 3rem; /* Reduce the gap between buttons */
+  margin-top: 1rem; /* Add some margin-top for spacing */
+  margin-bottom: 4rem;
+}
+
+.add-row-button,
+.assist-button {
   color: white;
   border: none;
   padding: 0.5rem 1rem;
@@ -40,8 +48,20 @@
   align-self: center;
 }
 
-.add-row-button:hover {
+.assist-button {
+  background-color: #38b6ff;
+}
+
+.add-row-button {
+  background-color: #4caf50;
+}
+
+.assist-button:hover {
   background-color: #45a049;
+}
+
+.add-row-button:hover {
+  background-color: #38b6ff;
 }
 
 /* Responsive styles for mobile devices */
@@ -58,5 +78,15 @@
 
   .event-input {
     width: 100%; /* Full width on mobile */
+  }
+
+  .button-container {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .add-row-button,
+  .assist-button {
+    width: 100%;
   }
 }

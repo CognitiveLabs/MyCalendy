@@ -28,6 +28,11 @@ const EventList = () => {
     setEvents([...events, { name: "", description: "" }]);
   };
 
+  const handleCallyAssist = () => {
+    // Placeholder function for "Let Cally assist you" button
+    console.log("Cally assistance requested");
+  };
+
   return (
     <div className={styles["event-list"]}>
       {events.map((event, index) => (
@@ -51,9 +56,14 @@ const EventList = () => {
           />
         </div>
       ))}
-      <button onClick={handleAddRow} className={styles["add-row-button"]}>
-        +
-      </button>
+      <div className={styles["button-container"]}>
+        <button onClick={handleAddRow} className={styles["add-row-button"]}>
+          Add a Row
+        </button>
+        <button onClick={handleCallyAssist} className={styles["assist-button"]}>
+          Let Cally assist you
+        </button>
+      </div>
     </div>
   );
 };

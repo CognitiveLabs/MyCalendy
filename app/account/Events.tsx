@@ -130,7 +130,11 @@ async function createAddEvent(event: Event, session: Session) {
 
 export default function Home({ session }: { session: Session }) {
   const [events, setEvents] = useState([
-    { title: "to start", description: "Description for event 1", id: "1" },
+    {
+      title: "hold to drag",
+      description: "Description for event 1",
+      id: "1",
+    },
   ]);
   const [allEvents, setAllEvents] = useState<Event[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -352,7 +356,7 @@ export default function Home({ session }: { session: Session }) {
               className="border-2 p-2 rounded-md draggable overflow-y-auto flex justify-center"
             >
               <div className="w-96">
-                <h1 className="font-bold text-lg text-center">Drag Event</h1>
+                <h1 className="font-bold text-lg text-center">Create Event</h1>
                 <div className="event-container">
                   {events.map((event) => (
                     <div
