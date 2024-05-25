@@ -19,7 +19,7 @@ import {
 import { Fragment, useEffect, useState, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
 import EventList from "./EventList";
-import EventRow from "./EventList";
+import { EventRow } from "./EventList";
 
 interface Event {
   title: string;

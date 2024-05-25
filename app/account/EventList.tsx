@@ -5,7 +5,8 @@ import styles from "./EventList.module.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-interface EventRow {
+export interface EventRow {
+  // Exporting the EventRow interface
   id: number;
   description: string;
   bestTime?: string; // Added bestTime property to store Cally's suggestion
