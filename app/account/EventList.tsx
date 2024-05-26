@@ -1,19 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Fragment } from "react";
 import styles from "./EventList.module.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Dialog, Transition } from "@headlessui/react";
 
 export interface EventRow {
   id: number;
   description: string;
   bestTime?: string;
+  isRecurring?: boolean;
+  maxHours?: number;
+  dueDate?: string;
 }
 
 interface EventListProps {
-  onAddToCalendar: (event: EventRow, times: string[]) => void;
-  onEventsAnalyzed: (events: EventRow[]) => void; // New prop
+  onAddToCalendar: (events: Event[]) => void;
+  onEventsAnalyzed: (events: EventRow[]) => void;
 }
 
 const EventList: React.FC<EventListProps> = ({
@@ -26,10 +30,23 @@ const EventList: React.FC<EventListProps> = ({
     { id: 3, description: "" },
   ]);
   const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentEventIndex, setCurrentEventIndex] = useState<number | null>(
+    null,
+  );
+
+  const handleOpenModal = (index: number) => {
+    setCurrentEventIndex(index);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   const handleInputChange = (
     index: number,
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = event.target;
     const updatedEvents = [...events];
@@ -58,7 +75,15 @@ const EventList: React.FC<EventListProps> = ({
               .map((event) => ({
                 role: "user",
                 id: event.id,
-                content: `Find the best time to schedule an event with description "${event.description}".`,
+                content: `Find the best time to schedule an event with description "${
+                  event.description
+                }", which should be completed by ${
+                  event.dueDate
+                }. It should take a maximum of ${
+                  event.maxHours
+                } hours and it is ${
+                  event.isRecurring ? "recurring" : "a single task"
+                }.`,
               })),
           ],
         }),
@@ -70,11 +95,15 @@ const EventList: React.FC<EventListProps> = ({
           const result = data.find((item: any) => item.id === event.id);
           return {
             ...event,
-            bestTime: result ? result.bestTime : "No suggestion",
+            bestTime: result
+              ? result.steps
+                  .map((step: any) => `${step.time} - ${step.description}`)
+                  .join(". ")
+              : "No suggestion",
           };
         });
         setEvents(updatedEvents);
-        onEventsAnalyzed(updatedEvents); // Call the new prop with updated events
+        onEventsAnalyzed(updatedEvents);
       } else {
         toast.error(
           data.error || "Failed to get scheduling advice from Cally.",
@@ -88,7 +117,55 @@ const EventList: React.FC<EventListProps> = ({
 
   const handleAddToCalendar = (event: EventRow) => {
     const times = event.bestTime?.split(".").map((time) => time.trim());
+    console.log("Times to be added to calendar:", times); // Debugging
     onAddToCalendar(event, times || []);
+  };
+
+  const handleAddEventToCalendar = (
+    event: EventRow,
+    steps: { time: string; description: string }[],
+  ) => {
+    console.log("Steps received for event:", event, steps); // Debugging
+
+    if (!Array.isArray(steps) || steps.length === 0) {
+      console.error("Expected steps to be an array, but got:", steps);
+      return;
+    }
+
+    const newEvents = steps
+      .map((step, index) => {
+        if (!step.time || typeof step.time !== "string") {
+          console.error("Invalid step format:", step.time);
+          return null;
+        }
+
+        const [hours, minutes] = step.time.split(":").map(Number);
+        if (isNaN(hours) || isNaN(minutes)) {
+          console.error("Invalid step format:", step.time);
+          return null;
+        }
+
+        const eventDate = new Date();
+        eventDate.setHours(hours, minutes, 0, 0);
+        if (isNaN(eventDate.getTime())) {
+          console.error("Invalid date:", eventDate);
+          return null;
+        }
+
+        console.log("Creating event with date:", eventDate); // Debugging
+
+        return {
+          title: `${event.description} - ${step.description}`,
+          description: `${event.description} - ${step.description}`,
+          start: eventDate.toISOString(),
+          allDay: false,
+          id: new Date().getTime() + index,
+        };
+      })
+      .filter((event) => event !== null); // Filter out invalid events
+
+    console.log("New events to be added:", newEvents); // Debugging
+    onAddToCalendar(newEvents);
   };
 
   return (
@@ -96,14 +173,12 @@ const EventList: React.FC<EventListProps> = ({
       {events.map((event, index) => (
         <div key={event.id} className={styles["event-row"]}>
           <span className={styles["event-number"]}>{index + 1}</span>
-          <input
-            type="text"
-            name="description"
-            value={event.description}
-            onChange={(e) => handleInputChange(index, e)}
-            placeholder="Event Description"
-            className={styles["event-input"]}
-          />
+          <button
+            onClick={() => handleOpenModal(index)}
+            className={styles["event-button"]}
+          >
+            Add Event Details
+          </button>
           {event.bestTime && (
             <div className={styles["best-time"]}>
               Best Time: {event.bestTime}
@@ -129,6 +204,122 @@ const EventList: React.FC<EventListProps> = ({
           {loading ? "Analyzing..." : "Let Cally assist you"}
         </button>
       </div>
+
+      {isModalOpen && currentEventIndex !== null && (
+        <Transition appear show={isModalOpen} as={Fragment}>
+          <Dialog as="div" className="relative z-10" onClose={handleCloseModal}>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-black bg-opacity-25" />
+            </Transition.Child>
+
+            <div className="fixed inset-0 overflow-y-auto">
+              <div className="flex min-h-full items-center justify-center p-4 text-center">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0 scale-95"
+                  enterTo="opacity-100 scale-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100 scale-100"
+                  leaveTo="opacity-0 scale-95"
+                >
+                  <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-lg font-medium leading-6 text-gray-900"
+                    >
+                      Add Event Details
+                    </Dialog.Title>
+                    <div className="mt-2">
+                      <textarea
+                        name="description"
+                        value={events[currentEventIndex].description}
+                        onChange={(e) =>
+                          handleInputChange(currentEventIndex, e)
+                        }
+                        placeholder="Event Description"
+                        className="w-full p-2 border rounded"
+                      />
+                      <div className="mt-4">
+                        <label className="block text-gray-700">
+                          Is this a single task or recurring?
+                        </label>
+                        <select
+                          name="isRecurring"
+                          value={
+                            events[currentEventIndex].isRecurring
+                              ? "recurring"
+                              : "single"
+                          }
+                          onChange={(e) =>
+                            handleInputChange(currentEventIndex, {
+                              target: {
+                                name: "isRecurring",
+                                value: e.target.value === "recurring",
+                              },
+                            } as React.ChangeEvent<HTMLInputElement>)
+                          }
+                          className="w-full p-2 border rounded"
+                        >
+                          <option value="single">Single</option>
+                          <option value="recurring">Recurring</option>
+                        </select>
+                      </div>
+                      <div className="mt-4">
+                        <label className="block text-gray-700">
+                          How many hours do you want to spend at most?
+                        </label>
+                        <input
+                          type="number"
+                          name="maxHours"
+                          value={events[currentEventIndex].maxHours || ""}
+                          onChange={(e) =>
+                            handleInputChange(currentEventIndex, e)
+                          }
+                          placeholder="Max hours"
+                          className="w-full p-2 border rounded"
+                        />
+                      </div>
+                      <div className="mt-4">
+                        <label className="block text-gray-700">
+                          What is the date this event should be completed by?
+                        </label>
+                        <input
+                          type="date"
+                          name="dueDate"
+                          value={events[currentEventIndex].dueDate || ""}
+                          onChange={(e) =>
+                            handleInputChange(currentEventIndex, e)
+                          }
+                          className="w-full p-2 border rounded"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mt-4">
+                      <button
+                        type="button"
+                        className="inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                        onClick={handleCloseModal}
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </Dialog.Panel>
+                </Transition.Child>
+              </div>
+            </div>
+          </Dialog>
+        </Transition>
+      )}
     </div>
   );
 };

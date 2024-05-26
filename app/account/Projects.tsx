@@ -60,15 +60,71 @@ const saveProjectToSupabase = async (project: {
   }
 };
 
-const ProgressBar: React.FC<{ steps: string[] }> = ({ steps }) => {
+const updateStepCompletion = async (
+  projectId: string,
+  stepOrder: number,
+  completed: boolean,
+) => {
+  const { data: sessionData, error: sessionError } =
+    await supabase.auth.getSession();
+
+  if (sessionError || !sessionData.session) {
+    console.error("Error fetching session:", sessionError);
+    return;
+  }
+
+  const user = sessionData.session.user;
+
+  // Fetch the current project data
+  const { data: projectData, error: projectError } = await supabase
+    .from("projects")
+    .select("steps")
+    .eq("user_id", user.id)
+    .eq("id", projectId)
+    .single();
+
+  if (projectError) {
+    console.error("Error fetching project:", projectError);
+    return;
+  }
+
+  const steps = projectData.steps;
+
+  // Update the specific step's completed status
+  if (steps[stepOrder - 1]) {
+    steps[stepOrder - 1].completed = completed;
+  }
+
+  // Update the project with the new steps
+  const { error: updateError } = await supabase
+    .from("projects")
+    .update({ steps })
+    .eq("user_id", user.id)
+    .eq("id", projectId);
+
+  if (updateError) {
+    console.error("Error updating step:", updateError);
+  } else {
+    console.log("Step updated successfully");
+  }
+};
+
+const ProgressBar: React.FC<{ steps: string[]; projectId: string }> = ({
+  steps,
+  projectId,
+}) => {
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
-  const toggleStepCompletion = (index: number) => {
-    setCompletedSteps((prev) =>
-      prev.includes(index)
-        ? prev.filter((stepIndex) => stepIndex !== index)
-        : [...prev, index],
-    );
+  const toggleStepCompletion = async (index: number) => {
+    const isCompleted = completedSteps.includes(index);
+    const newCompletedSteps = isCompleted
+      ? completedSteps.filter((stepIndex) => stepIndex !== index)
+      : [...completedSteps, index];
+
+    setCompletedSteps(newCompletedSteps);
+
+    // Update the specific step in Supabase
+    await updateStepCompletion(projectId, index + 1, !isCompleted);
   };
 
   return (
@@ -113,7 +169,9 @@ const Projects: React.FC<ProjectsProps> = ({ events }) => {
             <div className={styles["event-description"]}>
               {event.description}
             </div>
-            {steps.length > 0 && <ProgressBar steps={steps} />}
+            {steps.length > 0 && (
+              <ProgressBar steps={steps} projectId={event.id.toString()} />
+            )}
           </div>
         );
       })}

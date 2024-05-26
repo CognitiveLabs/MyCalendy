@@ -24,7 +24,7 @@ import Projects from "./Projects";
 interface Event {
   title: string;
   description: string;
-  start: Date | string;
+  start: string;
   allDay: boolean;
   id: number;
 }
@@ -388,32 +388,42 @@ export default function Home({ session }: { session: Session }) {
   }
 
   function handleAddEventToCalendar(event: EventRow, times: string[]) {
-    const newEvents = times.map((time, index) => {
-      const eventDate = new Date();
-      let hour = 0;
-      let minute = 0;
+    console.log("Event received:", event); // Debugging
+    console.log("Times parameter received:", times); // Debugging
 
-      if (time.includes("morning")) {
-        hour = 8; // Set to 8:00 AM
-      } else if (time.includes("afternoon")) {
-        hour = 13; // Set to 1:00 PM
-      } else if (time.includes("evening")) {
-        hour = 18; // Set to 6:00 PM
-      } else if (time.includes(":")) {
-        [hour, minute] = time.split(":").map(Number);
-      }
+    if (!Array.isArray(times) || times.length === 0) {
+      console.error("Invalid times array:", times);
+      return;
+    }
 
-      eventDate.setHours(hour, minute, 0, 0);
+    const newEvents = times
+      .map((time, index) => {
+        const eventDate = new Date();
+        let hour = 0;
+        let minute = 0;
 
-      return {
-        title: event.description,
-        description: event.description,
-        start: eventDate.toISOString(),
-        allDay: false,
-        id: new Date().getTime() + index,
-      };
-    });
+        if (time.includes(":")) {
+          [hour, minute] = time.split(":").map(Number);
+        }
 
+        eventDate.setHours(hour, minute, 0, 0);
+
+        if (isNaN(eventDate.getTime())) {
+          console.error("Invalid date:", eventDate);
+          return null;
+        }
+
+        return {
+          title: event.description,
+          description: event.description,
+          start: eventDate.toISOString(),
+          allDay: false,
+          id: new Date().getTime() + index,
+        };
+      })
+      .filter((event) => event !== null); // Filter out invalid events
+
+    console.log("New events to be added:", newEvents); // Debugging
     setAllEvents((prevEvents) => [...prevEvents, ...newEvents]);
   }
 
@@ -487,10 +497,10 @@ export default function Home({ session }: { session: Session }) {
             </div>
           </div>
           <EventList
-            onAddToCalendar={(event, times) =>
-              handleAddEventToCalendar(event, times)
-            }
+            onAddToCalendar={handleAddEventToCalendar}
             onEventsAnalyzed={setAnalyzedEvents}
+            providerToken={session.provider_token}
+            providerRefreshToken={session.provider_refresh_token}
           />
           <Projects events={analyzedEvents} />{" "}
         </div>

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
-
 import { createClient } from "@supabase/supabase-js";
-
 import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
@@ -33,7 +31,7 @@ const formatVercelMessages = (chatHistory: VercelChatMessage[]) => {
   return formattedDialogueTurns.join("\n");
 };
 
-const CONDENSE_QUESTION_TEMPLATE = `Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question, in its original language.
+const CONDENSE_QUESTION_TEMPLATE = `Given the following conversation and a follow-up question, rephrase the follow-up question to be a standalone question, in its original language.
 
 <chat_history>
   {chat_history}
@@ -47,6 +45,8 @@ const condenseQuestionPrompt = PromptTemplate.fromTemplate(
 
 const ANSWER_TEMPLATE = `You are an expert personal productivity assistant in the field of cognitive abilities and task scheduling. Your role is to provide clear and concise answers 
 about when and how to schedule tasks based on cognitive abilities.
+
+Break down the task described and provide specific 30-minute time slots for each part. Ensure the total time does not exceed the user's specified maximum hours. Provide the time slots in the format of "08:00", "08:30", "09:00", etc. Additionally, provide a short description for each time slot, explaining what should be done in that slot.
 
 Answer the question based only on the following context and chat history:
 <context>
@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
 
     let resolveWithDocuments: (value: Document[]) => void;
     const documentPromise = new Promise<Document[]>((resolve) => {
-      resolveWithDocuments = resolve;
+      resolveWithDocuments(documents);
     });
 
     const retriever = vectorstore.asRetriever({
@@ -137,7 +137,6 @@ export async function POST(req: NextRequest) {
       new BytesOutputParser(),
     ]);
 
-    // Process each message (event) individually and collect results
     const results = await Promise.all(
       messages.map(async (message: Message) => {
         const question = message.content;
@@ -152,7 +151,20 @@ export async function POST(req: NextRequest) {
           bestTime += new TextDecoder().decode(chunk);
         }
 
-        return { id: message.id, bestTime: bestTime.trim() };
+        // Extract specific times and descriptions from the response
+        const steps = bestTime
+          .split("\n")
+          .filter((step) => step.trim() !== "")
+          .map((step) => {
+            const [time, ...descriptionParts] = step.split(": ");
+            const description = descriptionParts.join(": ").trim();
+            return {
+              time: time.trim(),
+              description,
+            };
+          });
+
+        return { id: message.id, steps };
       }),
     );
 
