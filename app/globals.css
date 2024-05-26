@@ -422,3 +422,9 @@ body {
     height: 1rem;
   }
 }
+
+*,
+*:after,
+*:before {
+  box-sizing: border-box;
+}

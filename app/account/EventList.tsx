@@ -6,17 +6,20 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export interface EventRow {
-  // Exporting the EventRow interface
   id: number;
   description: string;
-  bestTime?: string; // Added bestTime property to store Cally's suggestion
+  bestTime?: string;
 }
 
 interface EventListProps {
   onAddToCalendar: (event: EventRow, times: string[]) => void;
+  onEventsAnalyzed: (events: EventRow[]) => void; // New prop
 }
 
-const EventList: React.FC<EventListProps> = ({ onAddToCalendar }) => {
+const EventList: React.FC<EventListProps> = ({
+  onAddToCalendar,
+  onEventsAnalyzed,
+}) => {
   const [events, setEvents] = useState<EventRow[]>([
     { id: 1, description: "" },
     { id: 2, description: "" },
@@ -54,7 +57,7 @@ const EventList: React.FC<EventListProps> = ({ onAddToCalendar }) => {
               .filter((event) => event.description.trim() !== "")
               .map((event) => ({
                 role: "user",
-                id: event.id, // Include the ID in the message
+                id: event.id,
                 content: `Find the best time to schedule an event with description "${event.description}".`,
               })),
           ],
@@ -71,6 +74,7 @@ const EventList: React.FC<EventListProps> = ({ onAddToCalendar }) => {
           };
         });
         setEvents(updatedEvents);
+        onEventsAnalyzed(updatedEvents); // Call the new prop with updated events
       } else {
         toast.error(
           data.error || "Failed to get scheduling advice from Cally.",

@@ -1,0 +1,115 @@
+.morningSliderContainer {
+  width: 300px; /* Adjust the width as needed */
+  margin: 0 auto;
+}
+
+.morningControl {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: 0 auto;
+}
+
+.morningTooltip::before {
+  color: white;
+  content: var(--morningLabel, "morning") " " counter(low) "%";
+  left: 0.5rem;
+}
+
+.morningTooltip::after {
+  color: white;
+  content: var(--eveningLabel, "evening") " " counter(high) "%";
+  right: 0.5rem;
+}
+
+.morningControlTrack::before {
+  background: orange;
+}
+
+.morningControlTrack::after {
+  background: var(--eveningColor, hsla(236, 74%, 54%, 0.5));
+}
+
+.morningTooltip {
+  font-size: 1rem;
+  position: absolute;
+  top: 50%; /* Center vertically */
+  left: 0;
+  right: 0;
+  height: 100%; /* Ensure this spans the full height */
+  pointer-events: none;
+  transform: translateY(-50%); /* Center vertically */
+  transition: transform var(--speed) var(--timing);
+  z-index: 2;
+  counter-reset: low var(--morning-value) high calc(100 - var(--morning-value));
+}
+
+.morningTooltip::before,
+.morningTooltip::after {
+  --range: calc((50 - (var(--morning-value) / 100 * 10)) * 1%);
+  font-variant: tabular-nums;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: monospace;
+}
+
+.morningControlTrack {
+  --morning: hsl(
+    24 74% calc(24% + (30% * (var(--morning-value, 0) / 100))) / 0.4
+  );
+  --evening: hsl(
+    0 0% 100% / calc(0.1 + (0.4 * (var(--morning-value, 0) / 100)))
+  );
+  height: 60px; /* Adjust the height as needed */
+  width: 100%;
+  position: absolute;
+  top: 50%; /* Center vertically */
+  transform: translateY(-50%); /* Center vertically */
+  pointer-events: none;
+  transition: height var(--speed) var(--timing);
+}
+
+.morningControlTrack::before,
+.morningControlTrack::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 4px;
+  transition: width var(--morning--update);
+  height: 100%; /* Ensure this spans the full height */
+}
+
+.morningControlTrack::before {
+  left: 0;
+  width: calc(var(--morning-value, 0) * 1% - 0.5rem);
+}
+
+.morningControlTrack::after {
+  right: 0;
+  width: calc((100 - var(--morning-value, 0)) * 1% - 0.5rem);
+}
+
+.morningControlIndicator {
+  height: 5%;
+  border-radius: 4px;
+  width: 4px;
+  position: absolute;
+  top: 50%;
+  background: hsl(0 0% 100% / calc((var(--active, 0) * 0.5) + 0.5));
+  left: calc(var(--morning-value, 0) * 1%);
+  z-index: 2;
+  transform: translate(-50%, -50%); /* Center vertically and horizontally */
+  transition:
+    left var(--morning--update),
+    background var(--morning--update);
+}
+
+.morningSliderInput {
+  position: relative;
+  width: 100%;
+  opacity: 0;
+  z-index: 2;
+  cursor: pointer;
+}

@@ -1,0 +1,114 @@
+.energySliderContainer {
+  width: 300px; /* Adjust the width as needed */
+  margin: 0 auto;
+}
+
+.energyControl {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: 0 auto;
+}
+
+.energyTooltip::before {
+  color: white;
+  content: var(--energyLabel, "energy") " " counter(low) "%";
+  left: 0.5rem;
+}
+
+.energyTooltip::after {
+  color: white;
+  content: var(--waterLabel, "");
+  right: 0.5rem;
+}
+
+.energyControlTrack::before {
+  background: green;
+}
+
+@font-face {
+  font-family: "Geist Sans";
+  src: url("https://assets.codepen.io/605876/GeistVF.ttf") format("truetype");
+}
+
+.energyTooltip {
+  font-size: 1rem;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 100%; /* Ensure this spans the full height */
+  pointer-events: none;
+  transform: translateY(-50%); /* Center vertically */
+  transition: transform var(--speed) var(--timing);
+  z-index: 2;
+  counter-reset: low var(--energy-value) high calc(100 - var(--energy-value));
+}
+
+.energyTooltip::before,
+.energyTooltip::after {
+  --range: calc((50 - (var(--energy-value) / 100 * 10)) * 1%);
+  font-variant: tabular-nums;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: monospace;
+}
+
+.energyControlTrack {
+  --energy: hsl(
+    24 74% calc(24% + (30% * (var(--energy-value, 0) / 100))) / 0.4
+  );
+  --water: hsl(0 0% 100% / calc(0.1 + (0.4 * (var(--energy-value, 0) / 100))));
+  height: 60px; /* Adjust the height as needed */
+  width: 100%;
+  position: absolute;
+  top: 50%; /* Center vertically */
+  transform: translateY(-50%); /* Center vertically */
+  pointer-events: none;
+  transition: height var(--speed) var(--timing);
+}
+
+.energyControlTrack::before,
+.energyControlTrack::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 4px;
+  transition: width var(--energy--update);
+  height: 100%; /* Ensure this spans the full height */
+}
+
+.energyControlTrack::before {
+  left: 0;
+  width: calc(var(--energy-value, 0) * 1% - 0.5rem);
+}
+
+.energyControlTrack::after {
+  right: 0;
+  width: calc((100 - var(--energy-value, 0)) * 1% - 0.5rem);
+}
+
+.energyControlIndicator {
+  height: 5%;
+  border-radius: 4px;
+  width: 4px;
+  position: absolute;
+  top: 50%;
+  background: hsl(0 0% 100% / calc((var(--active, 0) * 0.5) + 0.5));
+  left: calc(var(--energy-value, 0) * 1%);
+  z-index: 2;
+  transform: translate(-50%, -50%); /* Center vertically and horizontally */
+  transition:
+    left var(--energy--update),
+    background var(--energy--update);
+}
+
+.energySliderInput {
+  position: relative;
+  width: 100%;
+  opacity: 0;
+  z-index: 2;
+  cursor: pointer;
+}

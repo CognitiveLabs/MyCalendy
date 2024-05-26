@@ -18,8 +18,8 @@ import {
 } from "@heroicons/react/20/solid";
 import { Fragment, useEffect, useState, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
-import EventList from "./EventList";
-import { EventRow } from "./EventList";
+import EventList, { EventRow } from "./EventList";
+import Projects from "./Projects";
 
 interface Event {
   title: string;
@@ -150,8 +150,73 @@ export default function Home({ session }: { session: Session }) {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
+  const [analyzedEvents, setAnalyzedEvents] = useState<EventRow[]>([]); // New state
   const supabase = createClient();
   const draggableEl = useRef(null);
+
+  async function fetchGoogleCalendarEvents(session: Session) {
+    try {
+      const accessToken = session.provider_token;
+      console.log(
+        "Fetching Google Calendar events with access token:",
+        accessToken,
+      );
+
+      const response = await fetch(
+        "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + accessToken,
+          },
+        },
+      );
+
+      if (response.status === 401) {
+        console.log("Access token expired, refreshing token...");
+        const newAccessToken = await refreshAccessToken(session);
+        const newResponse = await fetch(
+          "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+          {
+            method: "GET",
+            headers: {
+              Authorization: "Bearer " + newAccessToken,
+            },
+          },
+        );
+        return await newResponse.json();
+      }
+
+      const eventsData = await response.json();
+      console.log("Fetched events:", eventsData); // Log fetched events for debugging
+      return eventsData;
+    } catch (error) {
+      console.error("Error fetching Google Calendar events:", error);
+      return null;
+    }
+  }
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      const googleEvents = await fetchGoogleCalendarEvents(session);
+
+      if (googleEvents && googleEvents.items) {
+        const formattedEvents = googleEvents.items.map((item: any) => ({
+          title: item.summary || "No Title",
+          description: item.description || "",
+          start: item.start.dateTime || item.start.date,
+          end: item.end.dateTime || item.end.date,
+          allDay: !item.start.dateTime,
+          id: item.id,
+        }));
+
+        console.log("Formatted events:", formattedEvents); // Log formatted events for debugging
+        setAllEvents(formattedEvents); // Directly set the formatted events
+      }
+    };
+
+    fetchEvents();
+  }, [session]);
 
   useEffect(() => {
     let draggableEl = document.getElementById("draggable-el");
@@ -166,7 +231,26 @@ export default function Home({ session }: { session: Session }) {
         },
       });
     }
-  }, []);
+
+    const fetchEvents = async () => {
+      const googleEvents = await fetchGoogleCalendarEvents(session);
+
+      if (googleEvents && googleEvents.items) {
+        const formattedEvents = googleEvents.items.map((item: any) => ({
+          title: item.summary,
+          description: item.description,
+          start: item.start.dateTime || item.start.date,
+          allDay: !item.start.dateTime,
+          id: item.id,
+        }));
+
+        console.log("Formatted events:", formattedEvents);
+        setAllEvents((prevEvents) => [...prevEvents, ...formattedEvents]);
+      }
+    };
+
+    fetchEvents();
+  }, [session]);
 
   function handleDateClick(arg: { date: Date; allDay: boolean }) {
     setNewEvent({
@@ -358,7 +442,7 @@ export default function Home({ session }: { session: Session }) {
                   center: "title",
                   right: "dayGridMonth,timeGridWeek",
                 }}
-                events={allEvents as EventSourceInput}
+                events={allEvents as EventSourceInput} // Ensure events are correctly formatted
                 nowIndicator={true}
                 editable={true}
                 droppable={true}
@@ -402,7 +486,13 @@ export default function Home({ session }: { session: Session }) {
               </div>
             </div>
           </div>
-          <EventList onAddToCalendar={handleAddEventToCalendar} />
+          <EventList
+            onAddToCalendar={(event, times) =>
+              handleAddEventToCalendar(event, times)
+            }
+            onEventsAnalyzed={setAnalyzedEvents}
+          />
+          <Projects events={analyzedEvents} />{" "}
         </div>
 
         <Transition.Root show={showDeleteModal} as={Fragment}>
@@ -475,6 +565,172 @@ export default function Home({ session }: { session: Session }) {
                       >
                         Cancel
                       </button>
+                    </div>
+                  </Dialog.Panel>
+                </Transition.Child>
+              </div>
+            </div>
+          </Dialog>
+        </Transition.Root>
+
+        <Transition.Root show={showModal} as={Fragment}>
+          <Dialog as="div" className="relative z-10" onClose={setShowModal}>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            </Transition.Child>
+
+            <div className="fixed inset-0 z-10 overflow-y-auto">
+              <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                  enterTo="opacity-100 translate-y-0 sm:scale-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                  leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                >
+                  <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                    <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                      <div className="sm:flex sm:items-start">
+                        <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                          <ExclamationTriangleIcon
+                            className="h-6 w-6 text-red-600"
+                            aria-hidden="true"
+                          />
+                        </div>
+                        <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                          <Dialog.Title
+                            as="h3"
+                            className="text-base font-semibold leading-6 text-gray-900"
+                          >
+                            {isEditing ? "Edit Event" : "Add Event"}
+                          </Dialog.Title>
+                          <div className="mt-2">
+                            <form
+                              onSubmit={handleSubmit}
+                              className="grid grid-cols-1 gap-y-6"
+                            >
+                              <div>
+                                <label
+                                  htmlFor="title"
+                                  className="block text-sm font-medium text-gray-700"
+                                >
+                                  Title
+                                </label>
+                                <div className="mt-1">
+                                  <input
+                                    id="title"
+                                    name="title"
+                                    type="text"
+                                    autoComplete="title"
+                                    required
+                                    value={newEvent.title}
+                                    onChange={handleChange}
+                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                  />
+                                </div>
+                              </div>
+
+                              <div>
+                                <label
+                                  htmlFor="description"
+                                  className="block text-sm font-medium text-gray-700"
+                                >
+                                  Description
+                                </label>
+                                <div className="mt-1">
+                                  <textarea
+                                    id="description"
+                                    name="description"
+                                    autoComplete="description"
+                                    required
+                                    value={newEvent.description}
+                                    onChange={handleChange}
+                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                  />
+                                </div>
+                              </div>
+
+                              <div>
+                                <label
+                                  htmlFor="start"
+                                  className="block text-sm font-medium text-gray-700"
+                                >
+                                  Start
+                                </label>
+                                <div className="mt-1">
+                                  <input
+                                    id="start"
+                                    name="start"
+                                    type="datetime-local"
+                                    autoComplete="start"
+                                    required
+                                    value={newEvent.start as string}
+                                    onChange={handleChange}
+                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="flex items-center">
+                                <input
+                                  id="allDay"
+                                  name="allDay"
+                                  type="checkbox"
+                                  checked={newEvent.allDay}
+                                  onChange={(e) =>
+                                    setNewEvent({
+                                      ...newEvent,
+                                      allDay: e.target.checked,
+                                    })
+                                  }
+                                  className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                />
+                                <label
+                                  htmlFor="allDay"
+                                  className="ml-2 block text-sm text-gray-900"
+                                >
+                                  All Day
+                                </label>
+                              </div>
+
+                              <div className="mt-4 flex justify-end">
+                                <button
+                                  type="button"
+                                  className="mr-2 inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                  onClick={handleCloseModal}
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="submit"
+                                  className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                >
+                                  {isEditing ? "Save Changes" : "Add Event"}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="ml-2 inline-flex justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                                  onClick={() =>
+                                    handleAddToGoogleCalendar(newEvent)
+                                  } // Pass session tokens
+                                >
+                                  Add to Google Calendar
+                                </button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </Dialog.Panel>
                 </Transition.Child>

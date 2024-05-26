@@ -14,6 +14,7 @@
   width: 100%; /* Make sure it uses the full available width */
   max-width: 800px; /* Set the desired maximum width */
   margin: 0 auto; /* Center the container */
+  margin-bottom: 3rem;
 }
 
 .event-row {
@@ -117,4 +118,37 @@
   .assist-button {
     width: 100%;
   }
+}
+
+.progress-bar {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-step {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  background-color: white;
+  color: black;
+  border-right: 1px solid #ddd;
+  transition: background-color 0.3s ease;
+}
+
+.progress-step:last-child {
+  border-right: none;
+}
+
+.progress-step.completed {
+  background-color: green;
+  color: white;
+}
+
+.progress-step.incomplete:hover {
+  background-color: lightgray;
 }
