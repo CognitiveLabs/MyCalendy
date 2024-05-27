@@ -116,7 +116,10 @@ const EventList: React.FC<EventListProps> = ({
   };
 
   const handleAddToCalendar = (event: EventRow) => {
-    const times = event.bestTime?.split(".").map((time) => time.trim());
+    const times = event.bestTime
+      ?.split(".")
+      .map((time) => time.trim())
+      .filter((time) => time.match(/\b\d{2}:\d{2}\b/)); // Ensure valid time format
     console.log("Times to be added to calendar:", times); // Debugging
     onAddToCalendar(event, times || []);
   };

@@ -396,16 +396,20 @@ export default function Home({ session }: { session: Session }) {
       return;
     }
 
-    const newEvents = times
+    const validTimes = times
+      .map((time) => {
+        // Extract time if it matches the HH:MM format
+        const match = time.match(/\b\d{2}:\d{2}\b/);
+        return match ? match[0] : null;
+      })
+      .filter((time) => time); // Remove null values
+
+    console.log("Valid times to be processed:", validTimes); // Debugging
+
+    const newEvents = validTimes
       .map((time, index) => {
+        const [hour, minute] = time.split(":").map(Number);
         const eventDate = new Date();
-        let hour = 0;
-        let minute = 0;
-
-        if (time.includes(":")) {
-          [hour, minute] = time.split(":").map(Number);
-        }
-
         eventDate.setHours(hour, minute, 0, 0);
 
         if (isNaN(eventDate.getTime())) {
