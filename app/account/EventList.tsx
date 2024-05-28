@@ -221,7 +221,7 @@ const EventList: React.FC<EventListProps> = ({
                                 name: "isRecurring",
                                 value: e.target.value === "recurring",
                               },
-                            } as React.ChangeEvent<HTMLInputElement>)
+                            } as unknown as React.ChangeEvent<HTMLInputElement>)
                           }
                           className="w-full p-2 border rounded"
                         >
