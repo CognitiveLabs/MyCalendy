@@ -215,7 +215,7 @@ export default function Home({ session }: { session: Session }) {
           end: new Date(item.end.dateTime || item.end.date).toISOString(),
           allDay: !item.start.dateTime,
           description: item.description || "",
-          id: item.id,
+          id: item.id, // Make sure this is a number
         }));
 
         console.log("Formatted events:", formattedEvents); // Log formatted events for debugging
@@ -452,7 +452,10 @@ export default function Home({ session }: { session: Session }) {
                   center: "title",
                   right: "dayGridMonth,timeGridWeek",
                 }}
-                events={allEvents}
+                events={allEvents.map((event) => ({
+                  ...event,
+                  id: event.id.toString(), // Convert id to string for FullCalendar
+                }))} // This ensures the id is a string when passed to FullCalendar
                 nowIndicator={true}
                 editable={true}
                 droppable={true}
