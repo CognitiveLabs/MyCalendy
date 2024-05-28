@@ -392,7 +392,7 @@ export default function Home({ session }: { session: Session }) {
         const match = time.match(/\b\d{2}:\d{2}\b/);
         return match ? match[0] : null;
       })
-      .filter((time) => time); // Remove null values
+      .filter((time): time is string => time !== null); // Type guard to filter out null values
 
     console.log("Valid times to be processed:", validTimes); // Debugging
 
@@ -415,7 +415,7 @@ export default function Home({ session }: { session: Session }) {
           id: new Date().getTime() + index,
         };
       })
-      .filter((event) => event !== null); // Filter out invalid events
+      .filter((event): event is Event => event !== null); // Filter out null values and ensure correct typing
 
     console.log("New events to be added:", newEvents); // Debugging
     setAllEvents((prevEvents) => [...prevEvents, ...newEvents]);
