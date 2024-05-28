@@ -28,7 +28,7 @@ interface Event {
   start: string;
   end: string;
   allDay: boolean;
-  id: string;
+  id: number;
 }
 
 interface Session {
@@ -193,6 +193,7 @@ export default function Home({ session }: { session: Session }) {
     title: "",
     description: "",
     start: "",
+    end: "",
     allDay: false,
     id: 0,
   });
@@ -285,6 +286,7 @@ export default function Home({ session }: { session: Session }) {
       title: "",
       description: "",
       start: "",
+      end: "",
       allDay: false,
       id: 0,
     });
@@ -318,6 +320,7 @@ export default function Home({ session }: { session: Session }) {
       title: "",
       description: "",
       start: "",
+      end: "",
       allDay: false,
       id: 0,
     });
@@ -441,7 +444,7 @@ export default function Home({ session }: { session: Session }) {
                   dayGridPlugin,
                   interactionPlugin,
                   timeGridPlugin,
-                  googleCalendarPlugin, // Add the Google Calendar plugin
+                  googleCalendarPlugin,
                 ]}
                 initialView="dayGridMonth"
                 headerToolbar={{
@@ -449,7 +452,7 @@ export default function Home({ session }: { session: Session }) {
                   center: "title",
                   right: "dayGridMonth,timeGridWeek",
                 }}
-                events={allEvents} // Set up Google Calendar events dynamically
+                events={allEvents}
                 nowIndicator={true}
                 editable={true}
                 droppable={true}
