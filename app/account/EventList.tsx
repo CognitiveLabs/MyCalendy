@@ -16,7 +16,7 @@ export interface EventRow {
 }
 
 interface EventListProps {
-  onAddToCalendar: (events: Event[]) => void;
+  onAddToCalendar: (event: EventRow, times: string[]) => void;
   onEventsAnalyzed: (events: EventRow[]) => void;
 }
 
@@ -122,53 +122,6 @@ const EventList: React.FC<EventListProps> = ({
       .filter((time) => time.match(/\b\d{2}:\d{2}\b/)); // Ensure valid time format
     console.log("Times to be added to calendar:", times); // Debugging
     onAddToCalendar(event, times || []);
-  };
-
-  const handleAddEventToCalendar = (
-    event: EventRow,
-    steps: { time: string; description: string }[],
-  ) => {
-    console.log("Steps received for event:", event, steps); // Debugging
-
-    if (!Array.isArray(steps) || steps.length === 0) {
-      console.error("Expected steps to be an array, but got:", steps);
-      return;
-    }
-
-    const newEvents = steps
-      .map((step, index) => {
-        if (!step.time || typeof step.time !== "string") {
-          console.error("Invalid step format:", step.time);
-          return null;
-        }
-
-        const [hours, minutes] = step.time.split(":").map(Number);
-        if (isNaN(hours) || isNaN(minutes)) {
-          console.error("Invalid step format:", step.time);
-          return null;
-        }
-
-        const eventDate = new Date();
-        eventDate.setHours(hours, minutes, 0, 0);
-        if (isNaN(eventDate.getTime())) {
-          console.error("Invalid date:", eventDate);
-          return null;
-        }
-
-        console.log("Creating event with date:", eventDate); // Debugging
-
-        return {
-          title: `${event.description} - ${step.description}`,
-          description: `${event.description} - ${step.description}`,
-          start: eventDate.toISOString(),
-          allDay: false,
-          id: new Date().getTime() + index,
-        };
-      })
-      .filter((event) => event !== null); // Filter out invalid events
-
-    console.log("New events to be added:", newEvents); // Debugging
-    onAddToCalendar(newEvents);
   };
 
   return (

@@ -16,6 +16,9 @@ dependencies:
   '@fullcalendar/daygrid':
     specifier: ^6.1.8
     version: 6.1.13(@fullcalendar/core@6.1.13)
+  '@fullcalendar/google-calendar':
+    specifier: ^6.1.13
+    version: 6.1.13(@fullcalendar/core@6.1.13)
   '@fullcalendar/interaction':
     specifier: ^6.1.8
     version: 6.1.13(@fullcalendar/core@6.1.13)
@@ -234,6 +237,14 @@ packages:
 
   /@fullcalendar/daygrid@6.1.13(@fullcalendar/core@6.1.13):
     resolution: {integrity: sha512-0I0hL1kgGjkZuc7Qt8mu4jjrqIL5PZzd58bEpTxoXRKI5UBZ9KbshGVMryQSXYANlrRtkPnXVt90VIDrxZbDrA==}
+    peerDependencies:
+      '@fullcalendar/core': ~6.1.13
+    dependencies:
+      '@fullcalendar/core': 6.1.13
+    dev: false
+
+  /@fullcalendar/google-calendar@6.1.13(@fullcalendar/core@6.1.13):
+    resolution: {integrity: sha512-aBk0YQom9fVrLit7gHDth/KRzRXJK6fuqT68txmmtYUhvR7CLsPgttXAwZ2127pvzqggMo6P0IvMrRCW3MoaAA==}
     peerDependencies:
       '@fullcalendar/core': ~6.1.13
     dependencies:

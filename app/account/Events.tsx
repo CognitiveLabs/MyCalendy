@@ -10,6 +10,7 @@ import interactionPlugin, {
 } from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
+import googleCalendarPlugin from "@fullcalendar/google-calendar"; // Import the Google Calendar plugin
 import { Dialog, Transition } from "@headlessui/react";
 import {
   CheckIcon,
@@ -25,8 +26,9 @@ interface Event {
   title: string;
   description: string;
   start: string;
+  end: string;
   allDay: boolean;
-  id: number;
+  id: string;
 }
 
 interface Session {
@@ -129,6 +131,52 @@ async function createAddEvent(event: Event, session: Session) {
   }
 }
 
+async function fetchGoogleCalendarEvents(session: Session, calendarId: string) {
+  try {
+    const accessToken = session.provider_token;
+    console.log(
+      "Fetching Google Calendar events with access token:",
+      accessToken,
+    );
+
+    const now = new Date();
+    const timeMin = now.toISOString();
+    const timeMax = new Date(now.setDate(now.getDate() + 30)).toISOString();
+
+    const response = await fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + accessToken,
+        },
+      },
+    );
+
+    if (response.status === 401) {
+      console.log("Access token expired, refreshing token...");
+      const newAccessToken = await refreshAccessToken(session);
+      const newResponse = await fetch(
+        `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + newAccessToken,
+          },
+        },
+      );
+      return await newResponse.json();
+    }
+
+    const eventsData = await response.json();
+    console.log("Fetched events:", eventsData); // Log fetched events for debugging
+    return eventsData;
+  } catch (error) {
+    console.error("Error fetching Google Calendar events:", error);
+    return null;
+  }
+}
+
 export default function Home({ session }: { session: Session }) {
   const [events, setEvents] = useState([
     {
@@ -153,65 +201,24 @@ export default function Home({ session }: { session: Session }) {
   const [analyzedEvents, setAnalyzedEvents] = useState<EventRow[]>([]); // New state
   const supabase = createClient();
   const draggableEl = useRef(null);
-
-  async function fetchGoogleCalendarEvents(session: Session) {
-    try {
-      const accessToken = session.provider_token;
-      console.log(
-        "Fetching Google Calendar events with access token:",
-        accessToken,
-      );
-
-      const response = await fetch(
-        "https://www.googleapis.com/calendar/v3/calendars/primary/events",
-        {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + accessToken,
-          },
-        },
-      );
-
-      if (response.status === 401) {
-        console.log("Access token expired, refreshing token...");
-        const newAccessToken = await refreshAccessToken(session);
-        const newResponse = await fetch(
-          "https://www.googleapis.com/calendar/v3/calendars/primary/events",
-          {
-            method: "GET",
-            headers: {
-              Authorization: "Bearer " + newAccessToken,
-            },
-          },
-        );
-        return await newResponse.json();
-      }
-
-      const eventsData = await response.json();
-      console.log("Fetched events:", eventsData); // Log fetched events for debugging
-      return eventsData;
-    } catch (error) {
-      console.error("Error fetching Google Calendar events:", error);
-      return null;
-    }
-  }
+  const calendarId = "primary";
 
   useEffect(() => {
     const fetchEvents = async () => {
-      const googleEvents = await fetchGoogleCalendarEvents(session);
+      const googleEvents = await fetchGoogleCalendarEvents(session, calendarId);
 
       if (googleEvents && googleEvents.items) {
         const formattedEvents = googleEvents.items.map((item: any) => ({
           title: item.summary || "No Title",
-          description: item.description || "",
-          start: item.start.dateTime || item.start.date,
-          end: item.end.dateTime || item.end.date,
+          start: new Date(item.start.dateTime || item.start.date).toISOString(),
+          end: new Date(item.end.dateTime || item.end.date).toISOString(),
           allDay: !item.start.dateTime,
+          description: item.description || "",
           id: item.id,
         }));
 
         console.log("Formatted events:", formattedEvents); // Log formatted events for debugging
-        setAllEvents(formattedEvents); // Directly set the formatted events
+        setAllEvents(formattedEvents); // Set the formatted events
       }
     };
 
@@ -231,31 +238,12 @@ export default function Home({ session }: { session: Session }) {
         },
       });
     }
-
-    const fetchEvents = async () => {
-      const googleEvents = await fetchGoogleCalendarEvents(session);
-
-      if (googleEvents && googleEvents.items) {
-        const formattedEvents = googleEvents.items.map((item: any) => ({
-          title: item.summary,
-          description: item.description,
-          start: item.start.dateTime || item.start.date,
-          allDay: !item.start.dateTime,
-          id: item.id,
-        }));
-
-        console.log("Formatted events:", formattedEvents);
-        setAllEvents((prevEvents) => [...prevEvents, ...formattedEvents]);
-      }
-    };
-
-    fetchEvents();
-  }, [session]);
+  }, []);
 
   function handleDateClick(arg: { date: Date; allDay: boolean }) {
     setNewEvent({
       ...newEvent,
-      start: arg.date,
+      start: arg.date.toISOString().slice(0, 16),
       allDay: arg.allDay,
       id: new Date().getTime(),
     });
@@ -266,7 +254,7 @@ export default function Home({ session }: { session: Session }) {
   function addEvent(data: DropArg) {
     const event = {
       ...newEvent,
-      start: data.date.toISOString(),
+      start: new Date(data.date).toISOString().slice(0, 16),
       title: data.draggedEl.innerText,
       allDay: data.allDay,
       id: new Date().getTime(),
@@ -398,7 +386,6 @@ export default function Home({ session }: { session: Session }) {
 
     const validTimes = times
       .map((time) => {
-        // Extract time if it matches the HH:MM format
         const match = time.match(/\b\d{2}:\d{2}\b/);
         return match ? match[0] : null;
       })
@@ -450,22 +437,30 @@ export default function Home({ session }: { session: Session }) {
           <div className="grid grid-cols-10">
             <div className="col-span-10">
               <FullCalendar
-                plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
+                plugins={[
+                  dayGridPlugin,
+                  interactionPlugin,
+                  timeGridPlugin,
+                  googleCalendarPlugin, // Add the Google Calendar plugin
+                ]}
+                initialView="dayGridMonth"
                 headerToolbar={{
                   left: "prev,next today",
                   center: "title",
                   right: "dayGridMonth,timeGridWeek",
                 }}
-                events={allEvents as EventSourceInput} // Ensure events are correctly formatted
+                events={allEvents} // Set up Google Calendar events dynamically
                 nowIndicator={true}
                 editable={true}
                 droppable={true}
                 selectable={true}
                 selectMirror={true}
-                dateClick={handleDateClick}
-                drop={(data) => addEvent(data)}
-                eventClick={handleEventClick}
-                eventContent={eventContent}
+                dateClick={(arg) => {
+                  console.log("Date clicked:", arg);
+                }}
+                eventClick={(data) => {
+                  console.log("Event clicked:", data);
+                }}
               />
             </div>
           </div>
@@ -502,9 +497,9 @@ export default function Home({ session }: { session: Session }) {
           </div>
           <EventList
             onAddToCalendar={handleAddEventToCalendar}
-            onEventsAnalyzed={setAnalyzedEvents}
-            providerToken={session.provider_token}
-            providerRefreshToken={session.provider_refresh_token}
+            onEventsAnalyzed={(events) =>
+              console.log("Events analyzed:", events)
+            }
           />
           <Projects events={analyzedEvents} />{" "}
         </div>
