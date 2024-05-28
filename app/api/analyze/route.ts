@@ -13,6 +13,12 @@ import {
 
 export const runtime = "edge";
 
+let documents: Document[] = [];
+let resolveWithDocuments: (value: Document[]) => void;
+const documentPromise = new Promise<Document[]>((resolve) => {
+  resolveWithDocuments = resolve;
+});
+
 const combineDocumentsFn = (docs: Document[]) => {
   const serializedDocs = docs.map((doc) => doc.pageContent);
   return serializedDocs.join("\n\n");
