@@ -18,11 +18,15 @@ export interface EventRow {
 interface EventListProps {
   onAddToCalendar: (event: EventRow, times: string[]) => void;
   onEventsAnalyzed: (events: EventRow[]) => void;
+  session: Session;
+  calendarId: string;
 }
 
 const EventList: React.FC<EventListProps> = ({
   onAddToCalendar,
   onEventsAnalyzed,
+  session,
+  calendarId,
 }) => {
   const [events, setEvents] = useState<EventRow[]>([
     { id: 1, description: "" },
@@ -59,9 +63,76 @@ const EventList: React.FC<EventListProps> = ({
     setEvents([...events, { id: newId, description: "" }]);
   };
 
+  const fetchGoogleCalendarEvents = async (
+    session: Session,
+    calendarId: string,
+  ) => {
+    try {
+      const accessToken = session.provider_token;
+      console.log(
+        "Fetching Google Calendar events with access token:",
+        accessToken,
+      );
+
+      const now = new Date();
+      const timeMin = now.toISOString();
+      const timeMax = new Date(now.setDate(now.getDate() + 30)).toISOString();
+
+      const response = await fetch(
+        `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + accessToken,
+          },
+        },
+      );
+
+      if (response.status === 401) {
+        console.log("Access token expired, refreshing token...");
+        const newAccessToken = await refreshAccessToken(session);
+        const newResponse = await fetch(
+          `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: "Bearer " + newAccessToken,
+            },
+          },
+        );
+        return await newResponse.json();
+      }
+
+      const eventsData = await response.json();
+      console.log("Fetched events:", eventsData);
+      return eventsData;
+    } catch (error) {
+      console.error("Error fetching Google Calendar events:", error);
+      return null;
+    }
+  };
+
   const handleCallyAssist = async () => {
     setLoading(true);
+    console.log("Cally assist button clicked");
+
     try {
+      console.log("Fetching Google Calendar events");
+      const googleEvents = await fetchGoogleCalendarEvents(session, calendarId);
+
+      if (!googleEvents || !googleEvents.items) {
+        console.error("No Google Calendar events fetched");
+        setLoading(false);
+        return;
+      }
+
+      const busyTimes = googleEvents.items.map((item: any) => ({
+        start: new Date(item.start.dateTime || item.start.date).getTime(),
+        end: new Date(item.end.dateTime || item.end.date).getTime(),
+      }));
+
+      console.log("Fetched busy times:", busyTimes);
+
       const response = await fetch("/api/analyze", {
         method: "POST",
         headers: {
@@ -89,8 +160,12 @@ const EventList: React.FC<EventListProps> = ({
         }),
       });
 
+      console.log("Cally API response received");
+
       const data = await response.json();
       if (response.ok) {
+        console.log("Cally API response data:", data);
+
         const updatedEvents = events.map((event) => {
           const result = data.find((item: any) => item.id === event.id);
           return {
@@ -102,17 +177,77 @@ const EventList: React.FC<EventListProps> = ({
               : "No suggestion",
           };
         });
+
+        console.log("Updated events with Cally suggestions:", updatedEvents);
+
+        updatedEvents.forEach((event) => {
+          if (event.bestTime) {
+            const suggestedTimes = event.bestTime.split(". ");
+            const dueDate = new Date(event.dueDate);
+            const today = new Date();
+            const daysUntilDue = Math.ceil(
+              (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+            );
+            const hoursPerDay = event.maxHours / daysUntilDue;
+
+            let currentDay = new Date(today);
+            let totalAssignedHours = 0;
+
+            const distributedTimes = suggestedTimes
+              .map((time) => {
+                const [startTime] = time.split(" - ");
+                const [hour, minute] = startTime.split(":").map(Number);
+                let eventTime = new Date(currentDay);
+                eventTime.setHours(hour, minute, 0, 0);
+
+                if (isNaN(eventTime.getTime())) {
+                  console.error("Invalid event time:", eventTime);
+                  return null;
+                }
+
+                while (
+                  busyTimes.some(
+                    (busy) =>
+                      eventTime.getTime() >= busy.start &&
+                      eventTime.getTime() < busy.end,
+                  ) ||
+                  totalAssignedHours >= hoursPerDay
+                ) {
+                  currentDay.setDate(currentDay.getDate() + 1);
+                  totalAssignedHours = 0;
+                  eventTime = new Date(currentDay);
+                  eventTime.setHours(hour, minute, 0, 0);
+                }
+
+                totalAssignedHours += 0.5; // increment by 0.5 for each 30-minute slot
+                return `${eventTime.toISOString()} - ${time.split(" - ")[1]}`;
+              })
+              .filter(Boolean);
+
+            event.bestTime = distributedTimes.join(". ");
+          }
+        });
+
+        console.log(
+          "Final updated events with distributed times:",
+          updatedEvents,
+        );
+
         setEvents(updatedEvents);
         onEventsAnalyzed(updatedEvents);
       } else {
+        console.error("Cally API response error:", data.error);
         toast.error(
           data.error || "Failed to get scheduling advice from Cally.",
         );
       }
     } catch (error) {
+      console.error("An error occurred while fetching data from Cally:", error);
       toast.error("An error occurred while fetching data from Cally.");
     }
+
     setLoading(false);
+    console.log("Cally assist processing completed");
   };
 
   const handleAddToCalendar = (event: EventRow) => {

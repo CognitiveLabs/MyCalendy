@@ -387,20 +387,10 @@ export default function Home({ session }: { session: Session }) {
       return;
     }
 
-    const validTimes = times
-      .map((time) => {
-        const match = time.match(/\b\d{2}:\d{2}\b/);
-        return match ? match[0] : null;
-      })
-      .filter((time): time is string => time !== null); // Type guard to filter out null values
-
-    console.log("Valid times to be processed:", validTimes); // Debugging
-
-    const newEvents = validTimes
+    const newEvents = times
       .map((time, index) => {
-        const [hour, minute] = time.split(":").map(Number);
-        const eventDate = new Date();
-        eventDate.setHours(hour, minute, 0, 0);
+        const [startTime, description] = time.split(" - ");
+        const eventDate = new Date(startTime);
 
         if (isNaN(eventDate.getTime())) {
           console.error("Invalid date:", eventDate);
@@ -409,7 +399,7 @@ export default function Home({ session }: { session: Session }) {
 
         return {
           title: event.description,
-          description: event.description,
+          description: description || event.description,
           start: eventDate.toISOString(),
           allDay: false,
           id: new Date().getTime() + index,
@@ -506,6 +496,8 @@ export default function Home({ session }: { session: Session }) {
             onEventsAnalyzed={(events) =>
               console.log("Events analyzed:", events)
             }
+            session={session}
+            calendarId={calendarId}
           />
           <Projects events={analyzedEvents} />{" "}
         </div>

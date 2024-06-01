@@ -49,15 +49,36 @@ const condenseQuestionPrompt = PromptTemplate.fromTemplate(
   CONDENSE_QUESTION_TEMPLATE,
 );
 
-const ANSWER_TEMPLATE = `You are an expert personal productivity assistant in the field of cognitive abilities and task scheduling. Your role is to provide clear and concise answers 
-about when and how to schedule tasks based on cognitive abilities.
+const ANSWER_TEMPLATE = `You are an expert personal productivity assistant in the field of cognitive abilities and task scheduling. Your role is to provide clear and concise answers about when and how to schedule tasks based on cognitive abilities.
 
-Break down the task described and provide specific 30-minute time slots for each part. Ensure the total time does not exceed the user's specified maximum hours. Provide the time slots in the format of "08:00", "08:30", "09:00", etc. Additionally, provide a short description for each time slot, explaining what should be done in that slot.
+Break down the task described and provide specific time slots (15, 30, or 45 minutes) for each part. Ensure the total time does not exceed the user's specified maximum hours. Provide the time slots in the format of "08:00", "08:15", "08:30", etc. Additionally, provide a short description for each time slot, explaining what should be done in that slot.
 
-Answer the question based only on the following context and chat history:
+Take into consideration the user's cognitive abilities throughout the day, and schedule tasks accordingly. Refer to the following context for information on cognitive abilities:
 <context>
   {context}
 </context>
+
+Here are the cognitive abilities that My Calendy is using in the database:
+
+Cognitive Abilities
+- Analytical: Break down complex information, find patterns, and draw logical conclusions.
+- Perceptual: Process and interpret details, patterns, and information.
+- Creative: Generate ideas and solutions in an unstructured, free-flowing manner.
+- Conceptual: Create concepts and form innovative connections between ideas.
+- Strategic: Pivoting to use your same resources in new and beneficial ways.
+- Administrative: Efficiently organize and manage tasks, resources, and people.
+- Technical: Apply specialized knowledge and skills to solve practical problems.
+- Collaborative: Work cooperatively with others to achieve shared objectives.
+
+Examples:
+- Analytical: Puzzles, data analysis, code review for sharp mornings (peak focus).
+- Perceptual: Proofreading, image editing, design in high-acuity afternoons.
+- Creative: Brainstorming, writing sessions during relaxed moments (free thinking).
+- Conceptual: Quiet, distraction-free periods for strategic planning & reports.
+- Strategic: Long-term goals, budgeting in clear mornings (future focus).
+- Administrative: Emails, filing, data entry for lower energy, focused times.
+- Technical: Coding, troubleshooting during peak energy & focus periods.
+- Collaborative: Meetings, projects when energy & communication are high.
 
 <chat_history>
   {chat_history}
@@ -65,6 +86,7 @@ Answer the question based only on the following context and chat history:
 
 Question: {question}
 `;
+
 const answerPrompt = PromptTemplate.fromTemplate(ANSWER_TEMPLATE);
 
 interface Message {
@@ -104,7 +126,6 @@ export async function POST(req: NextRequest) {
       new StringOutputParser(),
     ]);
 
-    let resolveWithDocuments: (value: Document[]) => void;
     const documentPromise = new Promise<Document[]>((resolve) => {
       resolveWithDocuments(documents);
     });
@@ -112,8 +133,8 @@ export async function POST(req: NextRequest) {
     const retriever = vectorstore.asRetriever({
       callbacks: [
         {
-          handleRetrieverEnd(documents) {
-            resolveWithDocuments(documents);
+          handleRetrieverEnd(docs) {
+            resolveWithDocuments(docs);
           },
         },
       ],
@@ -170,7 +191,28 @@ export async function POST(req: NextRequest) {
             };
           });
 
-        return { id: message.id, steps };
+        // Order steps by cognitive abilities rather than by time
+        const cognitiveOrder = [
+          "Analytical",
+          "Perceptual",
+          "Creative",
+          "Conceptual",
+          "Strategic",
+          "Administrative",
+          "Technical",
+          "Collaborative",
+        ];
+        const orderedSteps = steps.sort((a, b) => {
+          const aIndex = cognitiveOrder.findIndex((c) =>
+            a.description.includes(c),
+          );
+          const bIndex = cognitiveOrder.findIndex((c) =>
+            b.description.includes(c),
+          );
+          return aIndex - bIndex;
+        });
+
+        return { id: message.id, steps: orderedSteps };
       }),
     );
 
