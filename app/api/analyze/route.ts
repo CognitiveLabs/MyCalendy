@@ -191,17 +191,18 @@ export async function POST(req: NextRequest) {
             };
           });
 
-        // Order steps by cognitive abilities rather than by time
         const cognitiveOrder = [
+          "Administrative",
           "Analytical",
+          "Technical",
           "Perceptual",
+          "Collaborative",
           "Creative",
           "Conceptual",
           "Strategic",
-          "Administrative",
-          "Technical",
-          "Collaborative",
         ];
+
+        // Ensure this part orders steps correctly based on the cognitive order
         const orderedSteps = steps.sort((a, b) => {
           const aIndex = cognitiveOrder.findIndex((c) =>
             a.description.includes(c),

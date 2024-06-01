@@ -163,9 +163,9 @@ const EventList: React.FC<EventListProps> = ({
       console.log("Cally API response received");
 
       const data = await response.json();
-      if (response.ok) {
-        console.log("Cally API response data:", data);
+      console.log("Response data:", data);
 
+      if (response.ok) {
         const updatedEvents = events.map((event) => {
           const result = data.find((item: any) => item.id === event.id);
           return {

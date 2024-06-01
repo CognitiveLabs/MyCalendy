@@ -203,6 +203,8 @@ export default function Home({ session }: { session: Session }) {
   const supabase = createClient();
   const draggableEl = useRef(null);
   const calendarId = "primary";
+  const [showEventDetailsModal, setShowEventDetailsModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -354,10 +356,8 @@ export default function Home({ session }: { session: Session }) {
   function handleEventClick(data: { event: { id: string } }) {
     const event = allEvents.find((evt) => evt.id === Number(data.event.id));
     if (event) {
-      setNewEvent(event);
-      setEventToEdit(event);
-      setIsEditing(true);
-      setShowModal(true);
+      setSelectedEvent(event);
+      setShowEventDetailsModal(true);
     }
   }
 
@@ -451,12 +451,8 @@ export default function Home({ session }: { session: Session }) {
                 droppable={true}
                 selectable={true}
                 selectMirror={true}
-                dateClick={(arg) => {
-                  console.log("Date clicked:", arg);
-                }}
-                eventClick={(data) => {
-                  console.log("Event clicked:", data);
-                }}
+                dateClick={handleDateClick}
+                eventClick={handleEventClick} // Add this line
               />
             </div>
           </div>
@@ -901,6 +897,98 @@ export default function Home({ session }: { session: Session }) {
                                 </button>
                               </div>
                             </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Dialog.Panel>
+                </Transition.Child>
+              </div>
+            </div>
+          </Dialog>
+        </Transition.Root>
+        <Transition.Root show={showEventDetailsModal} as={Fragment}>
+          <Dialog
+            as="div"
+            className="relative z-10"
+            onClose={() => setShowEventDetailsModal(false)}
+          >
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            </Transition.Child>
+
+            <div className="fixed inset-0 z-10 overflow-y-auto">
+              <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                  enterTo="opacity-100 translate-y-0 sm:scale-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                  leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                >
+                  <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                    <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                      <div className="sm:flex sm:items-start">
+                        <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                          <ExclamationTriangleIcon
+                            className="h-6 w-6 text-red-600"
+                            aria-hidden="true"
+                          />
+                        </div>
+                        <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                          <Dialog.Title
+                            as="h3"
+                            className="text-base font-semibold leading-6 text-gray-900"
+                          >
+                            Event Details
+                          </Dialog.Title>
+                          <div className="mt-2">
+                            <p>
+                              <strong>Title:</strong> {selectedEvent?.title}
+                            </p>
+                            <p>
+                              <strong>Description:</strong>{" "}
+                              {selectedEvent?.description}
+                            </p>
+                            <p>
+                              <strong>Start:</strong>{" "}
+                              {new Date(selectedEvent?.start).toLocaleString()}
+                            </p>
+                            <p>
+                              <strong>End:</strong>{" "}
+                              {new Date(selectedEvent?.end).toLocaleString()}
+                            </p>
+                            {selectedEvent?.bestTime && (
+                              <div>
+                                <strong>Task Details:</strong>
+                                <ul>
+                                  {selectedEvent.bestTime
+                                    .split(". ")
+                                    .map((detail, index) => (
+                                      <li key={index}>{detail}</li>
+                                    ))}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+                          <div className="mt-4">
+                            <button
+                              type="button"
+                              className="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                              onClick={() => setShowEventDetailsModal(false)}
+                            >
+                              Close
+                            </button>
                           </div>
                         </div>
                       </div>
