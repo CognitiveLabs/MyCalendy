@@ -212,8 +212,14 @@ export async function POST(req: NextRequest) {
           );
           return aIndex - bIndex;
         });
-
-        return { id: message.id, steps: orderedSteps };
+        return {
+          id: message.id,
+          steps: orderedSteps.map((step) => ({
+            time: step.time,
+            description: step.description,
+            formatted: `${step.time} - ${step.description}`,
+          })),
+        };
       }),
     );
 

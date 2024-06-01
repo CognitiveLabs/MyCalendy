@@ -172,7 +172,7 @@ const EventList: React.FC<EventListProps> = ({
             ...event,
             bestTime: result
               ? result.steps
-                  .map((step: any) => `${step.time} - ${step.description}`)
+                  .map((step: any) => `${step.time} (${step.description})`)
                   .join(". ")
               : "No suggestion",
           };
@@ -195,7 +195,7 @@ const EventList: React.FC<EventListProps> = ({
 
             const distributedTimes = suggestedTimes
               .map((time) => {
-                const [startTime] = time.split(" - ");
+                const [startTime, ...rest] = time.split(" ");
                 const [hour, minute] = startTime.split(":").map(Number);
                 let eventTime = new Date(currentDay);
                 eventTime.setHours(hour, minute, 0, 0);
@@ -220,7 +220,7 @@ const EventList: React.FC<EventListProps> = ({
                 }
 
                 totalAssignedHours += 0.5; // increment by 0.5 for each 30-minute slot
-                return `${eventTime.toISOString()} - ${time.split(" - ")[1]}`;
+                return `${eventTime.toISOString()} (${rest.join(" ")})`;
               })
               .filter(Boolean);
 
@@ -253,10 +253,21 @@ const EventList: React.FC<EventListProps> = ({
   const handleAddToCalendar = (event: EventRow) => {
     const times = event.bestTime
       ?.split(".")
-      .map((time) => time.trim())
+      .map((time) => time.split(" ")[0].trim())
       .filter((time) => time.match(/\b\d{2}:\d{2}\b/)); // Ensure valid time format
+
     console.log("Times to be added to calendar:", times); // Debugging
-    onAddToCalendar(event, times || []);
+
+    // Include Cally's suggestions in the calendar event
+    const descriptions = event.bestTime
+      ?.split(".")
+      .map((time) => {
+        const parts = time.split(" ");
+        return parts.length > 1 ? parts[1].trim() : "";
+      })
+      .filter((description) => description !== "");
+
+    onAddToCalendar(event, times || [], descriptions || []);
   };
 
   return (
