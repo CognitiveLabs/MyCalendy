@@ -16,7 +16,11 @@ export interface EventRow {
 }
 
 interface EventListProps {
-  onAddToCalendar: (event: EventRow, times: string[]) => void;
+  onAddToCalendar: (
+    event: EventRow,
+    times: string[],
+    descriptions: string[],
+  ) => void;
   onEventsAnalyzed: (events: EventRow[]) => void;
   session: Session;
   calendarId: string;
@@ -251,23 +255,27 @@ const EventList: React.FC<EventListProps> = ({
   };
 
   const handleAddToCalendar = (event: EventRow) => {
-    const times = event.bestTime
-      ?.split(".")
-      .map((time) => time.split(" ")[0].trim())
-      .filter((time) => time.match(/\b\d{2}:\d{2}\b/)); // Ensure valid time format
-
-    console.log("Times to be added to calendar:", times); // Debugging
-
-    // Include Cally's suggestions in the calendar event
-    const descriptions = event.bestTime
-      ?.split(".")
-      .map((time) => {
-        const parts = time.split(" ");
-        return parts.length > 1 ? parts[1].trim() : "";
+    const timesAndDescriptions = event.bestTime
+      ?.split(". ")
+      .map((timeAndDesc) => {
+        const parts = timeAndDesc.split(" - ");
+        const time = parts[0].trim();
+        const description = parts.slice(1).join(" - ").trim();
+        return { time, description };
       })
-      .filter((description) => description !== "");
+      .filter(({ time, description }) => time && description);
 
-    onAddToCalendar(event, times || [], descriptions || []);
+    if (timesAndDescriptions) {
+      const times = timesAndDescriptions.map(({ time }) => time);
+      const descriptions = timesAndDescriptions.map(
+        ({ description }) => description,
+      );
+      console.log("Parsed times:", times);
+      console.log("Parsed descriptions:", descriptions);
+      onAddToCalendar(event, times, descriptions);
+    } else {
+      console.error("Failed to parse times or descriptions from bestTime.");
+    }
   };
 
   return (

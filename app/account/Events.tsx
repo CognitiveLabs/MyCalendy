@@ -21,7 +21,7 @@ import { Fragment, useEffect, useState, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
 import EventList, { EventRow } from "./EventList";
 import Projects from "./Projects";
-
+import { toast } from "react-toastify";
 interface Event {
   title: string;
   description: string;
@@ -378,38 +378,69 @@ export default function Home({ session }: { session: Session }) {
     );
   }
 
-  function handleAddEventToCalendar(event: EventRow, times: string[]) {
-    console.log("Event received:", event); // Debugging
-    console.log("Times parameter received:", times); // Debugging
+  const handleAddEventToCalendar = async (
+    event: EventRow,
+    times: string[],
+    descriptions: string[],
+  ) => {
+    console.log("handleAddEventToCalendar called with:", {
+      event,
+      times,
+      descriptions,
+    });
 
-    if (!Array.isArray(times) || times.length === 0) {
-      console.error("Invalid times array:", times);
-      return;
-    }
+    try {
+      const accessToken = session.provider_token;
 
-    const newEvents = times
-      .map((time, index) => {
-        const [startTime, description] = time.split(" - ");
-        const eventDate = new Date(startTime);
+      for (let i = 0; i < times.length; i++) {
+        const timeString = times[i].split(" ")[0]; // Extract the correct time string
+        const startTime = new Date(timeString).toISOString();
+        const endTime = new Date(
+          new Date(timeString).getTime() + 45 * 60 * 1000,
+        ).toISOString(); // 45 minutes duration
 
-        if (isNaN(eventDate.getTime())) {
-          console.error("Invalid date:", eventDate);
-          return null;
-        }
-
-        return {
-          title: event.description,
-          description: description || event.description,
-          start: eventDate.toISOString(),
-          allDay: false,
-          id: new Date().getTime() + index,
+        const calendarEvent = {
+          summary: event.description,
+          description: descriptions[i],
+          start: {
+            dateTime: startTime, // Ensure correct date format
+          },
+          end: {
+            dateTime: endTime, // Ensure correct date format
+          },
         };
-      })
-      .filter((event): event is Event => event !== null); // Filter out null values and ensure correct typing
 
-    console.log("New events to be added:", newEvents); // Debugging
-    setAllEvents((prevEvents) => [...prevEvents, ...newEvents]);
-  }
+        const response = await fetch(
+          `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(calendarEvent),
+          },
+        );
+
+        if (!response.ok) {
+          console.error(
+            "Failed to add event to Google Calendar",
+            await response.json(),
+          );
+          toast.error("Failed to add event to Google Calendar");
+        } else {
+          console.log("Event added to Google Calendar", await response.json());
+          toast.success("Event added to Google Calendar");
+        }
+      }
+    } catch (error) {
+      console.error(
+        "An error occurred while adding event to Google Calendar:",
+        error,
+      );
+      toast.error("An error occurred while adding event to Google Calendar.");
+    }
+  };
 
   return (
     <>
