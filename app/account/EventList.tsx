@@ -21,6 +21,11 @@ interface EventListProps {
     times: string[],
     descriptions: string[],
   ) => void;
+  onAddToLocalCalendar: (
+    event: EventRow,
+    times: string[],
+    descriptions: string[],
+  ) => void;
   onEventsAnalyzed: (events: EventRow[]) => void;
   session: Session;
   calendarId: string;
@@ -28,6 +33,7 @@ interface EventListProps {
 
 const EventList: React.FC<EventListProps> = ({
   onAddToCalendar,
+  onAddToLocalCalendar,
   onEventsAnalyzed,
   session,
   calendarId,
@@ -278,6 +284,30 @@ const EventList: React.FC<EventListProps> = ({
     }
   };
 
+  const handleAddToLocalCalendar = (event: EventRow) => {
+    const timesAndDescriptions = event.bestTime
+      ?.split(". ")
+      .map((timeAndDesc) => {
+        const parts = timeAndDesc.split(" - ");
+        const time = parts[0].trim();
+        const description = parts.slice(1).join(" - ").trim();
+        return { time, description };
+      })
+      .filter(({ time, description }) => time && description);
+
+    if (timesAndDescriptions) {
+      const times = timesAndDescriptions.map(({ time }) => time);
+      const descriptions = timesAndDescriptions.map(
+        ({ description }) => description,
+      );
+      console.log("Parsed times:", times);
+      console.log("Parsed descriptions:", descriptions);
+      onAddToLocalCalendar(event, times, descriptions);
+    } else {
+      console.error("Failed to parse times or descriptions from bestTime.");
+    }
+  };
+
   return (
     <div className={styles["event-list"]}>
       {events.map((event, index) => (
@@ -292,6 +322,12 @@ const EventList: React.FC<EventListProps> = ({
           {event.bestTime && (
             <div className={styles["best-time"]}>
               Best Time: {event.bestTime}
+              <button
+                className={styles["calendar-button"]}
+                onClick={() => handleAddToLocalCalendar(event)}
+              >
+                Add to Local Calendar
+              </button>
               <button
                 className={styles["calendar-button"]}
                 onClick={() => handleAddToCalendar(event)}

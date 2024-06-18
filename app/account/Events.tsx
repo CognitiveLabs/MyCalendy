@@ -22,6 +22,7 @@ import { createClient } from "@/utils/supabase/client";
 import EventList, { EventRow } from "./EventList";
 import Projects from "./Projects";
 import { toast } from "react-toastify";
+
 interface Event {
   title: string;
   description: string;
@@ -442,6 +443,15 @@ export default function Home({ session }: { session: Session }) {
     }
   };
 
+  const handleAddToLocalCalendar = (
+    event: EventRow,
+    times: string[],
+    descriptions: string[],
+  ) => {
+    console.log("Adding to local calendar:", { event, times, descriptions });
+    // Add your logic to handle adding events to the local calendar here
+  };
+
   return (
     <>
       <nav className="flex justify-between mb-12 border-b border-violet-100 p-4">
@@ -520,6 +530,7 @@ export default function Home({ session }: { session: Session }) {
           </div>
           <EventList
             onAddToCalendar={handleAddEventToCalendar}
+            onAddToLocalCalendar={handleAddToLocalCalendar} // Pass the function here
             onEventsAnalyzed={(events) =>
               console.log("Events analyzed:", events)
             }
