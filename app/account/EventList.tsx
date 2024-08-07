@@ -195,12 +195,16 @@ const EventList: React.FC<EventListProps> = ({
         updatedEvents.forEach((event) => {
           if (event.bestTime) {
             const suggestedTimes = event.bestTime.split(". ");
-            const dueDate = new Date(event.dueDate);
+            const dueDate = event.dueDate
+              ? new Date(event.dueDate)
+              : new Date(); // Provide a default value
             const today = new Date();
             const daysUntilDue = Math.ceil(
               (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
             );
-            const hoursPerDay = event.maxHours / daysUntilDue;
+            const hoursPerDay = event.maxHours
+              ? event.maxHours / daysUntilDue
+              : 1; // Provide a default value
 
             let currentDay = new Date(today);
             let totalAssignedHours = 0;
