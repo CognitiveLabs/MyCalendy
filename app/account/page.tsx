@@ -1,6 +1,5 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-// import AddEvent from "./AddEvent";
 import Events from "./Events";
 import { createClient } from "@/utils/supabase/server";
 import Header from "../header/page";

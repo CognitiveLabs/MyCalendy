@@ -5,8 +5,7 @@ import styles from "./EventList.module.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Dialog, Transition } from "@headlessui/react";
-import { Session } from "@supabase/supabase-js";
-import { refreshAccessToken } from "@/utils/supabase/supabaseAuth";
+import "@/utils/types";
 
 export interface EventRow {
   id: number;
