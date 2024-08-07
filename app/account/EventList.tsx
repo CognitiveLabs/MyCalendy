@@ -138,7 +138,12 @@ const EventList: React.FC<EventListProps> = ({
         return;
       }
 
-      const busyTimes = googleEvents.items.map((item: any) => ({
+      interface BusyTime {
+        start: number;
+        end: number;
+      }
+
+      const busyTimes: BusyTime[] = googleEvents.items.map((item: any) => ({
         start: new Date(item.start.dateTime || item.start.date).getTime(),
         end: new Date(item.end.dateTime || item.end.date).getTime(),
       }));
@@ -229,7 +234,7 @@ const EventList: React.FC<EventListProps> = ({
 
                 while (
                   busyTimes.some(
-                    (busy) =>
+                    (busy: BusyTime) =>
                       eventTime.getTime() >= busy.start &&
                       eventTime.getTime() < busy.end,
                   ) ||
@@ -244,7 +249,7 @@ const EventList: React.FC<EventListProps> = ({
                 totalAssignedHours += 0.5;
                 return `${eventTime.toISOString()} (${rest.join(" ")})`;
               })
-              .filter((time): time is string => time !== null);
+              .filter((time: null): time is string => time !== null);
 
             event.bestTime = distributedTimes.join(". ");
           }
