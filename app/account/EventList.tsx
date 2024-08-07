@@ -138,12 +138,7 @@ const EventList: React.FC<EventListProps> = ({
         return;
       }
 
-      interface BusyTime {
-        start: number;
-        end: number;
-      }
-
-      const busyTimes: BusyTime[] = googleEvents.items.map((item: any) => ({
+      const busyTimes = googleEvents.items.map((item: any) => ({
         start: new Date(item.start.dateTime || item.start.date).getTime(),
         end: new Date(item.end.dateTime || item.end.date).getTime(),
       }));
@@ -189,10 +184,7 @@ const EventList: React.FC<EventListProps> = ({
             ...event,
             bestTime: result
               ? result.steps
-                  .map(
-                    (step: { time: string; description: string }) =>
-                      `${step.time} (${step.description})`,
-                  )
+                  .map((step: any) => `${step.time} (${step.description})`)
                   .join(". ")
               : "No suggestion",
           };
@@ -205,17 +197,14 @@ const EventList: React.FC<EventListProps> = ({
             const suggestedTimes = event.bestTime.split(". ");
             const dueDate = event.dueDate
               ? new Date(event.dueDate)
-              : new Date();
+              : new Date(); // Provide a default value
             const today = new Date();
-            const daysUntilDue = Math.max(
-              1,
-              Math.ceil(
-                (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
-              ),
+            const daysUntilDue = Math.ceil(
+              (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
             );
             const hoursPerDay = event.maxHours
               ? event.maxHours / daysUntilDue
-              : 1;
+              : 1; // Provide a default value
 
             let currentDay = new Date(today);
             let totalAssignedHours = 0;
@@ -234,7 +223,7 @@ const EventList: React.FC<EventListProps> = ({
 
                 while (
                   busyTimes.some(
-                    (busy: BusyTime) =>
+                    (busy: { start: number; end: number }) =>
                       eventTime.getTime() >= busy.start &&
                       eventTime.getTime() < busy.end,
                   ) ||
@@ -246,7 +235,7 @@ const EventList: React.FC<EventListProps> = ({
                   eventTime.setHours(hour, minute, 0, 0);
                 }
 
-                totalAssignedHours += 0.5;
+                totalAssignedHours += 0.5; // increment by 0.5 for each 30-minute slot
                 return `${eventTime.toISOString()} (${rest.join(" ")})`;
               })
               .filter((time: string | null): time is string => time !== null);
