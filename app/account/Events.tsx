@@ -32,12 +32,17 @@ interface Event {
   id: number;
 }
 
-interface CustomSession {
+interface Session {
   provider_token: string;
   provider_refresh_token: string;
+  access_token?: string;
+  refresh_token?: string;
+  expires_in?: number;
+  token_type?: string;
+  user?: any;
 }
 
-async function refreshAccessToken(session: CustomSession) {
+async function refreshAccessToken(session: Session) {
   try {
     console.log(
       "Refreshing access token using refresh token:",
@@ -71,13 +76,13 @@ async function refreshAccessToken(session: CustomSession) {
   }
 }
 
-async function createAddEvent(event: Event, session: CustomSession) {
+async function createAddEvent(event: Event, session: Session) {
   try {
     console.log("Creating calendar event");
-    console.log("CustomSession data:", session); // Log session data for debugging
+    console.log("Session data:", session); // Log session data for debugging
 
     let accessToken = session.provider_token;
-    console.log("CustomSession provider token:", accessToken); // Log token for debugging
+    console.log("Session provider token:", accessToken); // Log token for debugging
 
     const googleEvent = {
       summary: event.title,
@@ -132,10 +137,7 @@ async function createAddEvent(event: Event, session: CustomSession) {
   }
 }
 
-async function fetchGoogleCalendarEvents(
-  session: CustomSession,
-  calendarId: string,
-) {
+async function fetchGoogleCalendarEvents(session: Session, calendarId: string) {
   try {
     const accessToken = session.provider_token;
     console.log(
@@ -181,7 +183,7 @@ async function fetchGoogleCalendarEvents(
   }
 }
 
-export default function Home({ session }: { session: CustomSession }) {
+export default function Home({ session }: { session: Session }) {
   const [events, setEvents] = useState([
     {
       title: "hold to drag",
