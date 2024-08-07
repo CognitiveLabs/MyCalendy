@@ -35,6 +35,9 @@ interface Event {
 interface Session {
   provider_token: string;
   provider_refresh_token: string;
+  expires_in?: number;
+  token_type?: string;
+  user?: any;
 }
 
 async function refreshAccessToken(session: Session) {
