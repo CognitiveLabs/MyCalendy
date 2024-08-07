@@ -184,7 +184,10 @@ const EventList: React.FC<EventListProps> = ({
             ...event,
             bestTime: result
               ? result.steps
-                  .map((step: any) => `${step.time} (${step.description})`)
+                  .map(
+                    (step: { time: string; description: string }) =>
+                      `${step.time} (${step.description})`,
+                  )
                   .join(". ")
               : "No suggestion",
           };
@@ -197,20 +200,23 @@ const EventList: React.FC<EventListProps> = ({
             const suggestedTimes = event.bestTime.split(". ");
             const dueDate = event.dueDate
               ? new Date(event.dueDate)
-              : new Date(); // Provide a default value
+              : new Date();
             const today = new Date();
-            const daysUntilDue = Math.ceil(
-              (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+            const daysUntilDue = Math.max(
+              1,
+              Math.ceil(
+                (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+              ),
             );
             const hoursPerDay = event.maxHours
               ? event.maxHours / daysUntilDue
-              : 1; // Provide a default value
+              : 1;
 
             let currentDay = new Date(today);
             let totalAssignedHours = 0;
 
             const distributedTimes = suggestedTimes
-              .map((time) => {
+              .map((time: string) => {
                 const [startTime, ...rest] = time.split(" ");
                 const [hour, minute] = startTime.split(":").map(Number);
                 let eventTime = new Date(currentDay);
@@ -235,10 +241,10 @@ const EventList: React.FC<EventListProps> = ({
                   eventTime.setHours(hour, minute, 0, 0);
                 }
 
-                totalAssignedHours += 0.5; // increment by 0.5 for each 30-minute slot
+                totalAssignedHours += 0.5;
                 return `${eventTime.toISOString()} (${rest.join(" ")})`;
               })
-              .filter(Boolean);
+              .filter((time): time is string => time !== null);
 
             event.bestTime = distributedTimes.join(". ");
           }
