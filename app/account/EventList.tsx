@@ -249,7 +249,7 @@ const EventList: React.FC<EventListProps> = ({
                 totalAssignedHours += 0.5;
                 return `${eventTime.toISOString()} (${rest.join(" ")})`;
               })
-              .filter((time: null): time is string => time !== null);
+              .filter((time: string | null): time is string => time !== null);
 
             event.bestTime = distributedTimes.join(". ");
           }
