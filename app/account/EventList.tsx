@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Dialog, Transition } from "@headlessui/react";
 import "@/utils/types";
-import { Session } from "@supabase/supabase-js";
 
 export interface EventRow {
   id: number;
@@ -15,6 +14,14 @@ export interface EventRow {
   isRecurring?: boolean;
   maxHours?: number;
   dueDate?: string;
+}
+
+interface Session {
+  provider_token: string;
+  provider_refresh_token: string;
+  expires_in?: number;
+  token_type?: string;
+  user?: any;
 }
 
 interface EventListProps {
