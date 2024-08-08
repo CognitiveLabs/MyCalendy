@@ -109,6 +109,7 @@ const EventList: React.FC<EventListProps> = ({
 
       if (response.status === 401) {
         console.log("Access token expired, refreshing token...");
+        // Assuming refreshAccessToken is defined elsewhere and imported
         const newAccessToken = await refreshAccessToken(session);
         const newResponse = await fetch(
           `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true`,

@@ -20,6 +20,9 @@ export default function Header() {
           <Link href="/blog" className="signika">
             Blog
           </Link>
+          <Link href="/signups" className="signika">
+            Sign Up
+          </Link>
         </div>
       </div>
     </header>
