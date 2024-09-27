@@ -103,7 +103,7 @@ const EarlySignupPage = () => {
           </div>
           <div>
             <span className={styles.benefitHighlight}>Direct feedback</span>
-            <p>Shape the product's development</p>
+            <p>Shape the product&apos;s development</p>
           </div>
           <div>
             <span className={styles.benefitHighlight}>50% off</span>
@@ -122,12 +122,12 @@ const EarlySignupPage = () => {
         </p>
         <ul className={styles.list}>
           <li>Sign in with your Google account</li>
-          <li>We don't store passwords</li>
+          <li>We don&apos;t store passwords</li>
           <li>Minimal data collection</li>
         </ul>
         <p className={styles.text}>
-          Your privacy is our priority. We're committed to data protection and
-          transparency.
+          Your privacy is our priority. We&apos;re committed to data protection
+          and transparency.
         </p>
       </section>
       {isAvailable ? (
