@@ -52,7 +52,6 @@ export async function GET(request: Request) {
       );
     }
 
-    // Early sign-up process
     try {
       const { data: user, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
@@ -86,8 +85,6 @@ export async function GET(request: Request) {
       }
     } catch (error) {
       console.error("Error in early sign-up process:", error);
-      // You might want to handle this error differently
-      // For now, we'll continue with the normal flow
     }
 
     return NextResponse.redirect(`${origin}${next}`);

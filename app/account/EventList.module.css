@@ -1,154 +1,388 @@
-.event-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 100%; /* Make sure it uses the full available width */
-  max-width: 800px; /* Set the desired maximum width */
-  margin: 0 auto; /* Center the container */
-}
+/* EventList.module.css */
 
+/* Container for the entire event list */
 .event-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  width: 100%; /* Make sure it uses the full available width */
-  max-width: 800px; /* Set the desired maximum width */
+  gap: 1.5rem;
+  width: 100%; /* Full width */
+  max-width: 800px; /* Maximum width */
   margin: 0 auto; /* Center the container */
   margin-bottom: 3rem;
+  background-color: #1f2937; /* Dark background */
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* Each individual event row */
 .event-row {
   display: flex;
-  gap: 1rem;
+  flex-direction: column; /* Stack elements vertically */
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #2d3748; /* Slightly lighter dark background */
+  border-radius: 6px;
+  border: 1px solid #4a5568; /* Dark border */
+}
+
+/* Header section within each event row */
+.event-header {
+  display: flex;
   align-items: center;
+  gap: 1rem;
 }
 
+/* Circular badge for event number */
 .event-number {
-  width: 2rem;
-  text-align: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #4f46e5; /* Indigo background */
+  color: #ffffff; /* White text */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: bold;
-}
-
-.event-input {
-  flex: 1;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
   font-size: 1rem;
 }
 
+/* Button to add event details */
+.event-button {
+  background-color: #10b981; /* Emerald green */
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.event-button:hover {
+  background-color: #059669; /* Darker emerald on hover */
+}
+
+/* Event description text */
+.event-description {
+  font-size: 1rem;
+  color: #e2e8f0; /* Light gray text */
+  padding-left: 3rem; /* Indent to align with event number */
+}
+
+/* Best time suggestion section */
+.best-time {
+  background-color: #2c5282; /* Dark blue background */
+  padding: 0.75rem 1rem;
+  border-left: 4px solid #4f46e5; /* Indigo left border */
+  border-radius: 4px;
+  color: #e2e8f0; /* Light gray text */
+  font-size: 0.95rem;
+}
+
+/* Label for best time */
+.best-time-label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* Container for calendar action buttons */
+.calendar-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* Calendar action buttons */
+.calendar-button {
+  background-color: #2563eb; /* Blue */
+  color: #ffffff;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.3s;
+}
+
+.calendar-button:hover {
+  background-color: #1d4ed8; /* Darker blue on hover */
+}
+
+/* Container for action buttons at the bottom */
 .button-container {
   display: flex;
   gap: 1rem;
   justify-content: center;
+  margin-top: 2rem;
 }
 
+/* Button to add a new row */
 .add-row-button {
-  background-color: #4caf50;
+  background-color: #4caf50; /* Green */
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   font-size: 1rem;
   border-radius: 4px;
   cursor: pointer;
-}
-
-.assist-button {
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  align-self: center;
-}
-
-.assist-button {
-  background-color: #38b6ff;
-}
-
-.add-row-button {
-  background-color: #4caf50;
-}
-
-.assist-button:hover {
-  background-color: #45a049;
+  transition: background-color 0.3s;
 }
 
 .add-row-button:hover {
-  background-color: #38b6ff;
+  background-color: #43a047; /* Darker green on hover */
 }
 
+/* Button for Cally Assist */
 .analyze-button {
-  background-color: #007bff;
+  background-color: #007bff; /* Bright blue */
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   font-size: 1rem;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .analyze-button:hover {
-  background-color: #0056b3;
+  background-color: #0056b3; /* Darker blue on hover */
 }
 
-/* Responsive styles for mobile devices */
-@media (max-width: 767px) {
-  .event-row {
-    flex-direction: column; /* Stack elements vertically */
-    align-items: flex-start; /* Align items to the start */
-  }
-
-  .event-number {
-    width: 100%; /* Full width on mobile */
-    text-align: left; /* Align text to the left */
-  }
-
-  .event-input {
-    width: 100%; /* Full width on mobile */
-  }
-
-  .button-container {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .add-row-button,
-  .assist-button {
-    width: 100%;
-  }
+.analyze-button:disabled {
+  background-color: #4a90e2; /* Lighter blue when disabled */
+  cursor: not-allowed;
 }
 
-.progress-bar {
-  display: flex;
-  flex-direction: row;
-  margin-top: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  overflow: hidden;
+/* Modal Styles (optional enhancements if not already styled) */
+.modal-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
-.progress-step {
-  flex: 1;
-  padding: 10px;
-  text-align: center;
+.modal-content {
+  background-color: #1f2937; /* Dark background for modal */
+  color: #e2e8f0; /* Light text */
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+.modal-input,
+.modal-select,
+.modal-textarea {
+  background-color: #2d3748; /* Dark input backgrounds */
+  color: #e2e8f0;
+  border: 1px solid #4a5568;
+  padding: 0.5rem;
+  border-radius: 4px;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.modal-button {
+  background-color: #4f46e5; /* Indigo */
+  color: #ffffff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
   cursor: pointer;
-  background-color: white;
-  color: black;
-  border-right: 1px solid #ddd;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
 }
 
-.progress-step:last-child {
-  border-right: none;
+.modal-button:hover {
+  background-color: #4338ca; /* Darker indigo on hover */
 }
 
-.progress-step.completed {
-  background-color: green;
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%; /* Full width */
+  max-width: 800px; /* Maximum width */
+  margin: 0 auto; /* Center the container */
+  margin-bottom: 3rem;
+  background-color: #1f2937; /* Dark background */
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Each individual event row */
+.event-row {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #2d3748; /* Slightly lighter dark background */
+  border-radius: 6px;
+  border: 1px solid #4a5568; /* Dark border */
+}
+
+/* Header section within each event row */
+.event-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Circular badge for event number */
+.event-number {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #4f46e5; /* Indigo background */
+  color: #ffffff; /* White text */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Button to add event details */
+.event-button {
+  background-color: #10b981; /* Emerald green */
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.event-button:hover {
+  background-color: #059669; /* Darker emerald on hover */
+}
+
+/* Event description text */
+.event-description {
+  font-size: 1rem;
+  color: #e2e8f0; /* Light gray text */
+  padding-left: 3rem; /* Indent to align with event number */
+}
+
+/* Best time suggestion section */
+.best-time {
+  background-color: #2c5282; /* Dark blue background */
+  padding: 0.75rem 1rem;
+  border-left: 4px solid #4f46e5; /* Indigo left border */
+  border-radius: 4px;
+  color: #e2e8f0; /* Light gray text */
+  font-size: 0.95rem;
+}
+
+/* Label for best time */
+.best-time-label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* Container for calendar action buttons */
+.calendar-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* Calendar action buttons */
+.calendar-button {
+  background-color: #2563eb; /* Blue */
+  color: #ffffff;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.3s;
+}
+
+.calendar-button:hover {
+  background-color: #1d4ed8; /* Darker blue on hover */
+}
+
+/* Container for action buttons at the bottom */
+.button-container {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+/* Button to add a new row */
+.add-row-button {
+  background-color: #4caf50; /* Green */
   color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-.progress-step.incomplete:hover {
-  background-color: lightgray;
+.add-row-button:hover {
+  background-color: #43a047; /* Darker green on hover */
+}
+
+/* Button for Cally Assist */
+.analyze-button {
+  background-color: #007bff; /* Bright blue */
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.analyze-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.analyze-button:disabled {
+  background-color: #4a90e2; /* Lighter blue when disabled */
+  cursor: not-allowed;
+}
+
+/* New Styles for Best Time List */
+.best-time-list {
+  list-style-type: none; /* Remove default bullets */
+  padding: 0;
+  margin: 0;
+}
+
+.best-time-item {
+  background-color: #1a202c; /* Slightly darker than best-time background */
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border: 1px solid #4a5568; /* Dark border */
+}
+
+.best-time-item:last-child {
+  margin-bottom: 0;
+}
+
+.best-time-item-time {
+  font-weight: 600;
+  color: #cbd5e0; /* Light gray for time */
+  flex-shrink: 0;
+}
+
+.best-time-item-details {
+  color: #e2e8f0; /* Light gray text */
+}
+
+.best-time-item-details span {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.best-time-item-details-description {
+  font-size: 0.9rem;
+  color: #a0aec0; /* Slightly darker gray for description */
 }

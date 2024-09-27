@@ -535,7 +535,7 @@ export default function Home({ session }: { session: Session }) {
           </div>
           <EventList
             onAddToCalendar={handleAddEventToCalendar}
-            onAddToLocalCalendar={handleAddToLocalCalendar} // Pass the function here
+            onAddToLocalCalendar={handleAddToLocalCalendar}
             onEventsAnalyzed={(events) =>
               console.log("Events analyzed:", events)
             }
@@ -772,7 +772,7 @@ export default function Home({ session }: { session: Session }) {
                                   className="ml-2 inline-flex justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                                   onClick={() =>
                                     handleAddToGoogleCalendar(newEvent)
-                                  } // Pass session tokens
+                                  }
                                 >
                                   Add to Google Calendar
                                 </button>

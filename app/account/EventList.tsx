@@ -49,8 +49,6 @@ const EventList: React.FC<EventListProps> = ({
 }) => {
   const [events, setEvents] = useState<EventRow[]>([
     { id: 1, description: "" },
-    { id: 2, description: "" },
-    { id: 3, description: "" },
   ]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -326,42 +324,54 @@ const EventList: React.FC<EventListProps> = ({
     <div className={styles["event-list"]}>
       {events.map((event, index) => (
         <div key={event.id} className={styles["event-row"]}>
-          <span className={styles["event-number"]}>{index + 1}</span>
-          <button
-            onClick={() => handleOpenModal(index)}
-            className={styles["event-button"]}
-          >
-            Add Event Details
-          </button>
+          <div className={styles["event-header"]}>
+            <span className={styles["event-number"]}>{index + 1}</span>
+            <button
+              onClick={() => handleOpenModal(index)}
+              className={styles["event-button"]}
+            >
+              Add Event Details
+            </button>
+          </div>
+          {event.description && (
+            <div className={styles["event-description"]}>
+              {event.description}
+            </div>
+          )}
           {event.bestTime && (
             <div className={styles["best-time"]}>
-              Best Time: {event.bestTime}
-              <button
-                className={styles["calendar-button"]}
-                onClick={() => handleAddToLocalCalendar(event)}
-              >
-                Add to Local Calendar
-              </button>
-              <button
-                className={styles["calendar-button"]}
-                onClick={() => handleAddToCalendar(event)}
-              >
-                View on Calendar
-              </button>
+              <div className={styles["best-time-label"]}>Best Time:</div>
+              <div className={styles["best-time-info"]}>
+                {event.bestTime}
+                <div className={styles["calendar-buttons"]}>
+                  <button
+                    className={styles["calendar-button"]}
+                    onClick={() => handleAddToLocalCalendar(event)}
+                  >
+                    Add to Local Calendar
+                  </button>
+                  <button
+                    className={styles["calendar-button"]}
+                    onClick={() => handleAddToCalendar(event)}
+                  >
+                    View on Calendar
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>
       ))}
       <div className={styles["button-container"]}>
         <button onClick={handleAddRow} className={styles["add-row-button"]}>
-          Add a row
+          Add a Row
         </button>
         <button
           onClick={handleCallyAssist}
           className={styles["analyze-button"]}
           disabled={loading}
         >
-          {loading ? "Analyzing..." : "Let Cally assist you"}
+          {loading ? "Analyzing..." : "Let Cally Assist You"}
         </button>
       </div>
 
@@ -427,7 +437,7 @@ const EventList: React.FC<EventListProps> = ({
                               },
                             } as unknown as React.ChangeEvent<HTMLInputElement>)
                           }
-                          className="w-full p-2 border rounded"
+                          className="w-full p-2 border rounded text-gray-700"
                         >
                           <option value="single">Single</option>
                           <option value="recurring">Recurring</option>
