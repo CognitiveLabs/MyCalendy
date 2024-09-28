@@ -86,20 +86,6 @@ const EventList: React.FC<EventListProps> = ({
 
     try {
       console.log("Fetching Google Calendar events");
-      const googleEvents = await fetchGoogleCalendarEvents(session, calendarId);
-
-      if (!googleEvents || !googleEvents.items) {
-        console.error("No Google Calendar events fetched");
-        setLoading(false);
-        return;
-      }
-
-      const busyTimes = googleEvents.items.map((item: any) => ({
-        start: new Date(item.start.dateTime || item.start.date).getTime(),
-        end: new Date(item.end.dateTime || item.end.date).getTime(),
-      }));
-
-      console.log("Fetched busy times:", busyTimes);
 
       const response = await fetch("/api/analyze", {
         method: "POST",
@@ -175,20 +161,6 @@ const EventList: React.FC<EventListProps> = ({
                 if (isNaN(eventTime.getTime())) {
                   console.error("Invalid event time:", eventTime);
                   return null;
-                }
-
-                while (
-                  busyTimes.some(
-                    (busy: { start: number; end: number }) =>
-                      eventTime.getTime() >= busy.start &&
-                      eventTime.getTime() < busy.end,
-                  ) ||
-                  totalAssignedHours >= hoursPerDay
-                ) {
-                  currentDay.setDate(currentDay.getDate() + 1);
-                  totalAssignedHours = 0;
-                  eventTime = new Date(currentDay);
-                  eventTime.setHours(hour, minute, 0, 0);
                 }
 
                 totalAssignedHours += 0.5; // increment by 0.5 for each 30-minute slot
