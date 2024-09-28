@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Dialog, Transition } from "@headlessui/react";
 import "@/utils/types";
-import { Session as SupabaseSession } from "@supabase/supabase-js";
 
 export interface EventRow {
   id: number;
@@ -17,14 +16,12 @@ export interface EventRow {
   dueDate?: string;
 }
 
-interface Session extends SupabaseSession {
+interface Session {
   provider_token: string;
   provider_refresh_token: string;
   expires_in?: number;
   token_type?: string;
   user?: any;
-  access_token: string;
-  refresh_token: string;
 }
 
 interface EventListProps {
@@ -88,7 +85,7 @@ const EventList: React.FC<EventListProps> = ({
     calendarId: string,
   ) => {
     try {
-      const accessToken = session.provider_token || session.access_token;
+      const accessToken = session.provider_token;
       console.log(
         "Fetching Google Calendar events with access token:",
         accessToken,
@@ -110,6 +107,7 @@ const EventList: React.FC<EventListProps> = ({
 
       if (response.status === 401) {
         console.log("Access token expired, refreshing token...");
+        // Assuming refreshAccessToken is defined elsewhere and imported
         const newAccessToken = await refreshAccessToken(session);
         const newResponse = await fetch(
           `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true`,
@@ -326,54 +324,42 @@ const EventList: React.FC<EventListProps> = ({
     <div className={styles["event-list"]}>
       {events.map((event, index) => (
         <div key={event.id} className={styles["event-row"]}>
-          <div className={styles["event-header"]}>
-            <span className={styles["event-number"]}>{index + 1}</span>
-            <button
-              onClick={() => handleOpenModal(index)}
-              className={styles["event-button"]}
-            >
-              Add Event Details
-            </button>
-          </div>
-          {event.description && (
-            <div className={styles["event-description"]}>
-              {event.description}
-            </div>
-          )}
+          <span className={styles["event-number"]}>{index + 1}</span>
+          <button
+            onClick={() => handleOpenModal(index)}
+            className={styles["event-button"]}
+          >
+            Add Event Details
+          </button>
           {event.bestTime && (
             <div className={styles["best-time"]}>
-              <div className={styles["best-time-label"]}>Best Time:</div>
-              <div className={styles["best-time-info"]}>
-                {event.bestTime}
-                <div className={styles["calendar-buttons"]}>
-                  <button
-                    className={styles["calendar-button"]}
-                    onClick={() => handleAddToLocalCalendar(event)}
-                  >
-                    Add to Local Calendar
-                  </button>
-                  <button
-                    className={styles["calendar-button"]}
-                    onClick={() => handleAddToCalendar(event)}
-                  >
-                    View on Calendar
-                  </button>
-                </div>
-              </div>
+              Best Time: {event.bestTime}
+              <button
+                className={styles["calendar-button"]}
+                onClick={() => handleAddToLocalCalendar(event)}
+              >
+                Add to Local Calendar
+              </button>
+              <button
+                className={styles["calendar-button"]}
+                onClick={() => handleAddToCalendar(event)}
+              >
+                View on Calendar
+              </button>
             </div>
           )}
         </div>
       ))}
       <div className={styles["button-container"]}>
         <button onClick={handleAddRow} className={styles["add-row-button"]}>
-          Add a Row
+          Add a row
         </button>
         <button
           onClick={handleCallyAssist}
           className={styles["analyze-button"]}
           disabled={loading}
         >
-          {loading ? "Analyzing..." : "Let Cally Assist You"}
+          {loading ? "Analyzing..." : "Let Cally assist you"}
         </button>
       </div>
 
@@ -439,7 +425,7 @@ const EventList: React.FC<EventListProps> = ({
                               },
                             } as unknown as React.ChangeEvent<HTMLInputElement>)
                           }
-                          className="w-full p-2 border rounded text-gray-700"
+                          className="w-full p-2 border rounded"
                         >
                           <option value="single">Single</option>
                           <option value="recurring">Recurring</option>
