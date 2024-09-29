@@ -1,3 +1,5 @@
+// account/page.tsx
+
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Events from "./Events";
@@ -6,15 +8,16 @@ import Header from "../header/page";
 
 export default async function AccountPage() {
   const supabase = createClient();
-  const { data: sessionData } = await supabase.auth.getSession();
 
-  if (!sessionData?.session) {
-    console.error("Session not found, redirecting to login.");
+  // Fetch the authenticated user directly from Supabase Auth server
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+
+  if (userError || !userData?.user) {
+    console.error("Authenticated user not found, redirecting to login.");
     redirect("/");
   }
 
-  const session = sessionData.session;
-
+  // Securely fetch tokens from cookies
   const provider_token = cookies().get("provider_token")?.value;
   const provider_refresh_token = cookies().get("provider_refresh_token")?.value;
 
@@ -23,27 +26,22 @@ export default async function AccountPage() {
     redirect("/");
   }
 
-  console.log("Session data:", session);
-
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data?.user) {
-    redirect("/");
-  }
+  console.log("Authenticated user:", userData.user);
 
   const fullSession = {
-    access_token: session.access_token,
-    refresh_token: session.refresh_token,
+    access_token: userData.session?.access_token || "",
+    refresh_token: userData.session?.refresh_token || "",
     provider_token,
     provider_refresh_token,
-    expires_in: session.expires_in,
-    token_type: session.token_type,
-    user: session.user,
+    expires_in: userData.session?.expires_in,
+    token_type: userData.session?.token_type,
+    user: userData.user,
   };
 
   return (
     <>
       <Header />
-      <p>Hello {data.user.email}</p>
+      <p>Hello {userData.user.email}</p>
       <Events session={fullSession} />
       <br />
     </>

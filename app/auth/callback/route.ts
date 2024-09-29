@@ -55,34 +55,6 @@ export async function GET(request: Request) {
     try {
       const { data: user, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
-
-      if (user) {
-        // Check if the user is already in the early_signups table
-        const { data: existingSignup, error: checkError } = await supabase
-          .from("early_signups")
-          .select("id")
-          .eq("user_id", user.id)
-          .single();
-
-        if (checkError && checkError.code !== "PGRST116") {
-          // PGRST116 means no rows returned
-          throw checkError;
-        }
-
-        if (!existingSignup) {
-          // Insert the user into the early_signups table
-          const { error: insertError } = await supabase
-            .from("early_signups")
-            .insert([
-              {
-                user_id: user.id,
-                email: user.email,
-              },
-            ]);
-
-          if (insertError) throw insertError;
-        }
-      }
     } catch (error) {
       console.error("Error in early sign-up process:", error);
     }
