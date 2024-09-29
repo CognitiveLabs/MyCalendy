@@ -1007,26 +1007,6 @@ export default function Home({ session }: { session: Session }) {
                               <strong>Description:</strong>{" "}
                               {selectedEvent?.description}
                             </p>
-                            <p>
-                              <strong>Start:</strong>{" "}
-                              {new Date(selectedEvent?.start).toLocaleString()}
-                            </p>
-                            <p>
-                              <strong>End:</strong>{" "}
-                              {new Date(selectedEvent?.end).toLocaleString()}
-                            </p>
-                            {selectedEvent?.bestTime && (
-                              <div>
-                                <strong>Task Details:</strong>
-                                <ul>
-                                  {selectedEvent.bestTime
-                                    .split(". ")
-                                    .map((detail, index) => (
-                                      <li key={index}>{detail}</li>
-                                    ))}
-                                </ul>
-                              </div>
-                            )}
                           </div>
                           <div className="mt-4">
                             <button
