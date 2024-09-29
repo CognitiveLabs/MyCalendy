@@ -6,12 +6,14 @@ import Header from "../header/page";
 
 export default async function AccountPage() {
   const supabase = createClient();
-  const { data: session } = await supabase.auth.getSession();
+  const { data: sessionData } = await supabase.auth.getSession();
 
-  if (!session) {
+  if (!sessionData?.session) {
     console.error("Session not found, redirecting to login.");
     redirect("/");
   }
+
+  const session = sessionData.session;
 
   const provider_token = cookies().get("provider_token")?.value;
   const provider_refresh_token = cookies().get("provider_refresh_token")?.value;
@@ -21,18 +23,28 @@ export default async function AccountPage() {
     redirect("/");
   }
 
-  console.log("Session data:", session); // Log session data for debugging
+  console.log("Session data:", session);
 
   const { data, error } = await supabase.auth.getUser();
   if (error || !data?.user) {
     redirect("/");
   }
 
+  const fullSession = {
+    access_token: session.access_token,
+    refresh_token: session.refresh_token,
+    provider_token,
+    provider_refresh_token,
+    expires_in: session.expires_in,
+    token_type: session.token_type,
+    user: session.user,
+  };
+
   return (
     <>
       <Header />
       <p>Hello {data.user.email}</p>
-      <Events session={{ provider_token, provider_refresh_token }} />
+      <Events session={fullSession} />
       <br />
     </>
   );
