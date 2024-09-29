@@ -17,12 +17,6 @@ const EarlySignupPage = () => {
 
   const checkAvailability = async () => {
     const { data, error } = await supabase.rpc("are_early_signups_available");
-    if (error) {
-      console.error("Error checking availability:", error);
-      setError("Unable to check signup availability. Please try again later.");
-    } else {
-      setIsAvailable(data);
-    }
   };
 
   const handleSignUp = async () => {
@@ -44,9 +38,6 @@ const EarlySignupPage = () => {
       // The callback route will handle inserting the user into the early_signups table
     } catch (error) {
       console.error("Error during sign up process:", error);
-      setError(
-        "An error occurred during the sign-up process. Please try again.",
-      );
     } finally {
       setIsLoading(false);
     }
